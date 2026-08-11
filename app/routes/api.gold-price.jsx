@@ -1,11 +1,58 @@
 import { getGoldPrices } from "../services/gold.server";
 
-export async function loader() {
+const USD_TO_AED = 3.6725;
+
+const CURRENCY_RATES = {
+  USD: 1,
+  AED: USD_TO_AED,
+  GBP: 0.79,
+  EUR: 0.86,
+  SAR: 3.75,
+  QAR: 3.64,
+  KWD: 0.307,
+  BHD: 0.376,
+  OMR: 0.385,
+  PKR: 280,
+  INR: 87,
+  CAD: 1.38,
+  AUD: 1.53,
+  NZD: 1.68,
+  SGD: 1.29,
+  JPY: 147,
+  CNY: 7.18,
+};
+
+export async function loader({ request }) {
   try {
-    const prices = await getGoldPrices();
+    const url = new URL(request.url);
+
+    const currency =
+      (url.searchParams.get("currency") || "USD").toUpperCase();
+
+    const usdPrices = await getGoldPrices();
+
+    const rate = CURRENCY_RATES[currency];
+
+    if (!rate) {
+      return Response.json(
+        {
+          success: false,
+          error: `Unsupported currency: ${currency}`,
+        },
+        { status: 400 },
+      );
+    }
+
+    const prices = Object.fromEntries(
+      Object.entries(usdPrices).map(([karat, price]) => [
+        karat,
+        Number(price) * rate,
+      ]),
+    );
 
     return Response.json({
       success: true,
+      currency,
       prices,
       updatedAt: new Date().toISOString(),
     });
@@ -15,7 +62,10 @@ export async function loader() {
     return Response.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unknown error",
       },
       { status: 500 },
     );
