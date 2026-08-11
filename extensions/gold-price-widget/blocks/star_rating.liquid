@@ -1,270 +1,911 @@
+{% assign gold_purity = product.metafields.custom.gold_purity.value | default: "22K" %}
+{% assign gold_weight = product.metafields.custom.gold_weight.value | default: 0 %}
+{% assign craftsmanship = product.metafields.custom.craftsmanship.value | default: 0 %}
+{% assign engraving_fee = product.metafields.custom.personal_engraving_fee.value | default: 0 %}
+{% assign packaging_fee = product.metafields.custom.premium_packaging_fee.value | default: 0 %}
+
+{% assign engraving_enabled = product.metafields.custom.personal_engraving.value %}
+{% assign packaging_enabled = product.metafields.custom.premium_packaging.value %}
+
+{% assign shop_currency = localization.country.currency.iso_code | default: shop.currency %}
+
 <div
   class="gold-price-widget"
   data-gold-widget
-  data-product-id="{{ product.id }}"
+  data-karat="{{ gold_purity | remove: 'K' | remove: 'k' }}"
+  data-weight="{{ gold_weight }}"
+  data-craftsmanship="{{ craftsmanship }}"
+  data-engraving="{{ engraving_fee }}"
+  data-packaging="{{ packaging_fee }}"
+  data-currency="{{ shop_currency }}"
+  data-engraving-enabled="{% if engraving_enabled %}true{% else %}false{% endif %}"
+  data-packaging-enabled="{% if packaging_enabled %}true{% else %}false{% endif %}"
 >
+
   <div class="gold-widget-header">
     <div>
-      <div class="gold-widget-title">Live Gold Price</div>
-      <div class="gold-widget-subtitle" data-karat-label>
-        {{ product.metafields.custom.gold_purity.value | default: "22K" }} Gold
+      <div class="gold-widget-label">
+        LIVE GOLD PRICE
+      </div>
+
+      <div class="gold-widget-title">
+        {{ gold_purity }} Gold
       </div>
     </div>
 
     <div class="gold-widget-live">
       <span class="gold-live-dot"></span>
-      <span data-updated-text>Updated just now</span>
+      <span data-updated-text>Loading...</span>
     </div>
   </div>
+
 
   <div class="gold-widget-price">
-    <span data-gold-price>Loading...</span>
-    <span>/ g</span>
+    <span data-gold-price>—</span>
+
+    <span class="gold-widget-unit">
+      <span data-currency-code>{{ shop_currency }}</span> / g
+    </span>
   </div>
 
-  <div class="gold-widget-row">
-    <span>Weight</span>
-    <strong>{{ product.metafields.custom.gold_weight.value | default: 0 }} g</strong>
-  </div>
 
-  <div class="gold-widget-row">
-    <span>Karat</span>
-    <strong data-karat-value>
-      {{ product.metafields.custom.gold_purity.value | default: "22K" }}
-    </strong>
-  </div>
+  <div class="gold-widget-details">
 
-  <div class="gold-widget-row">
-    <span>Gold Value</span>
-    <strong data-gold-value>Calculating...</strong>
-  </div>
-
-  {% assign craftsmanship = product.metafields.custom.craftsmanship.value | default: 0 %}
-  {% assign engraving_fee = product.metafields.custom.personal_engraving_fee.value | default: 0 %}
-  {% assign packaging_fee = product.metafields.custom.premium_packaging_fee.value | default: 0 %}
-
-  <div class="gold-widget-row">
-    <span>Craftsmanship</span>
-    <strong>
-      {{ craftsmanship }}%
-      <small data-craftsmanship-value></small>
-    </strong>
-  </div>
-
-  {% if product.metafields.custom.personal_engraving.value %}
     <div class="gold-widget-row">
-      <span>Engraving</span>
+      <span>Weight</span>
+
       <strong>
-        {{ engraving_fee }}%
-        <small data-engraving-value></small>
+        {{ gold_weight }} g
       </strong>
     </div>
-  {% endif %}
 
-  {% if product.metafields.custom.premium_packaging.value %}
+
     <div class="gold-widget-row">
-      <span>Premium Packaging</span>
+      <span>Karat</span>
+
       <strong>
-        {{ packaging_fee }}%
-        <small data-packaging-value></small>
+        {{ gold_purity }}
       </strong>
     </div>
-  {% endif %}
+
+
+    <div class="gold-widget-row gold-widget-total">
+      <span>Gold Value</span>
+
+      <strong data-gold-value>—</strong>
+    </div>
+
+
+    {% if craftsmanship > 0 %}
+      <div class="gold-widget-row">
+        <span>
+          Craftsmanship
+          <small>{{ craftsmanship }}%</small>
+        </span>
+
+        <strong data-craftsmanship-value>—</strong>
+      </div>
+    {% endif %}
+
+
+    {% if engraving_enabled %}
+      <div class="gold-widget-row">
+        <span>
+          Personal Engraving
+          <small>{{ engraving_fee }}%</small>
+        </span>
+
+        <strong data-engraving-value>—</strong>
+      </div>
+    {% endif %}
+
+
+    {% if packaging_enabled %}
+      <div class="gold-widget-row">
+        <span>
+          Premium Packaging
+          <small>{{ packaging_fee }}%</small>
+        </span>
+
+        <strong data-packaging-value>—</strong>
+      </div>
+    {% endif %}
+
+  </div>
+
+
+  <div class="gold-widget-footer">
+    <span class="gold-footer-dot"></span>
+
+    <span data-footer-status>
+      Live gold price
+    </span>
+  </div>
+
 </div>
 
-<script>
-(() => {
-  const widget = document.querySelector("[data-gold-widget]");
-  if (!widget) return;
-
-  const goldPriceEl = widget.querySelector("[data-gold-price]");
-  const goldValueEl = widget.querySelector("[data-gold-value]");
-  const craftsmanshipValueEl = widget.querySelector("[data-craftsmanship-value]");
-  const engravingValueEl = widget.querySelector("[data-engraving-value]");
-  const packagingValueEl = widget.querySelector("[data-packaging-value]");
-  const updatedEl = widget.querySelector("[data-updated-text]");
-
-  const weight = Number({{ product.metafields.custom.gold_weight.value | default: 0 | json }});
-  const karatText = {{ product.metafields.custom.gold_purity.value | default: "22K" | json }};
-
-  const craftsmanshipPercent =
-    Number({{ product.metafields.custom.craftsmanship.value | default: 0 | json }});
-
-  const engravingPercent =
-    Number({{ product.metafields.custom.personal_engraving_fee.value | default: 0 | json }});
-
-  const packagingPercent =
-    Number({{ product.metafields.custom.premium_packaging_fee.value | default: 0 | json }});
-
-  const engravingEnabled =
-    {{ product.metafields.custom.personal_engraving.value | default: false | json }};
-
-  const packagingEnabled =
-    {{ product.metafields.custom.premium_packaging.value | default: false | json }};
-
-  function getKarat() {
-    const match = String(karatText).match(/\d+/);
-    return match ? Number(match[0]) : 22;
-  }
-
-  function formatPrice(value) {
-    return new Intl.NumberFormat("en-PK", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(value);
-  }
-
-  async function loadGoldPrice() {
-    try {
-      const response = await fetch("/apps/gold-price-updater/api/gold-price");
-
-      if (!response.ok) {
-        throw new Error("Gold price request failed");
-      }
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || "Unable to load gold price");
-      }
-
-      const karat = getKarat();
-      const pricePerGram = Number(data.prices[String(karat) + "k"]);
-
-      if (!pricePerGram) {
-        throw new Error("Price for selected karat was not found");
-      }
-
-      const goldValue = pricePerGram * weight;
-
-      const craftsmanshipValue =
-        goldValue * craftsmanshipPercent / 100;
-
-      const engravingValue =
-        engravingEnabled
-          ? goldValue * engravingPercent / 100
-          : 0;
-
-      const packagingValue =
-        packagingEnabled
-          ? goldValue * packagingPercent / 100
-          : 0;
-
-      goldPriceEl.textContent = "Rs. " + formatPrice(pricePerGram);
-      goldValueEl.textContent = "Rs. " + formatPrice(goldValue);
-
-      if (craftsmanshipValueEl) {
-        craftsmanshipValueEl.textContent =
-          "Rs. " + formatPrice(craftsmanshipValue);
-      }
-
-      if (engravingValueEl) {
-        engravingValueEl.textContent =
-          "Rs. " + formatPrice(engravingValue);
-      }
-
-      if (packagingValueEl) {
-        packagingValueEl.textContent =
-          "Rs. " + formatPrice(packagingValue);
-      }
-
-      if (data.updatedAt) {
-        const updated = new Date(data.updatedAt);
-        updatedEl.textContent =
-          "Updated " + updated.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-          });
-      }
-
-    } catch (error) {
-      console.error("Gold widget error:", error);
-      goldPriceEl.textContent = "Unavailable";
-      goldValueEl.textContent = "Unable to calculate";
-    }
-  }
-
-  loadGoldPrice();
-})();
-</script>
 
 <style>
+
 .gold-price-widget {
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
-  padding: 18px;
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+  padding: 24px;
   margin: 20px 0;
-  background: #fff;
+
+  border: 1px solid #e8e8e8;
+  border-radius: 16px;
+
+  background: #ffffff;
+  color: #171717;
+
   font-family: inherit;
+
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
 }
 
 .gold-widget-header {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
   align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.gold-widget-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  color: #8a8a8a;
+  margin-bottom: 7px;
 }
 
 .gold-widget-title {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.gold-widget-subtitle {
-  margin-top: 4px;
-  font-size: 14px;
-  color: #666;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 650;
+  color: #171717;
 }
 
 .gold-widget-live {
-  font-size: 11px;
-  color: #777;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 7px 11px;
+  border-radius: 20px;
+
+  background: #f3f8f3;
+  color: #527157;
+
+  font-size: 12px;
   white-space: nowrap;
 }
 
 .gold-live-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+
   border-radius: 50%;
-  background: #22a06b;
-  margin-right: 4px;
+  background: #5b8a5e;
+
+  box-shadow:
+    0 0 0 3px rgba(91, 138, 94, 0.12);
 }
 
 .gold-widget-price {
-  margin: 18px 0;
-  font-size: 24px;
-  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+
+  margin: 32px 0 25px;
 }
 
-.gold-widget-price span:last-child {
-  font-size: 13px;
-  font-weight: 400;
-  color: #777;
+.gold-widget-price [data-gold-price] {
+  font-size: 32px;
+  line-height: 1;
+
+  font-weight: 700;
+  letter-spacing: -0.8px;
+
+  color: #171717;
+}
+
+.gold-widget-unit {
+  font-size: 14px;
+  color: #888;
+}
+
+.gold-widget-details {
+  border-top: 1px solid #eeeeee;
 }
 
 .gold-widget-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 15px;
-  padding: 9px 0;
-  border-top: 1px solid #f0f0f0;
-  font-size: 14px;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 14px 0;
+
+  border-bottom: 1px solid #eeeeee;
+
+  font-size: 15px;
+}
+
+.gold-widget-row > span {
+  color: #666;
 }
 
 .gold-widget-row strong {
+  color: #171717;
+  font-weight: 600;
+
   text-align: right;
+  white-space: nowrap;
 }
 
 .gold-widget-row small {
   display: block;
-  margin-top: 2px;
+
+  margin-top: 4px;
+
   font-size: 11px;
-  color: #777;
+  line-height: 1;
+
+  color: #999;
+
   font-weight: 400;
 }
+
+.gold-widget-total {
+  padding-top: 17px;
+  padding-bottom: 17px;
+}
+
+.gold-widget-total > span {
+  color: #222;
+  font-weight: 650;
+}
+
+.gold-widget-total strong {
+  font-size: 16px;
+}
+
+.gold-widget-footer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 16px;
+
+  font-size: 11px;
+  color: #999;
+}
+
+.gold-footer-dot {
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: #5b8a5e;
+}
+
+@media screen and (max-width: 749px) {
+
+  .gold-price-widget {
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 14px;
+  }
+
+  .gold-widget-title {
+    font-size: 21px;
+  }
+
+  .gold-widget-price {
+    margin-top: 28px;
+  }
+
+  .gold-widget-price [data-gold-price] {
+    font-size: 28px;
+  }
+
+  .gold-widget-row {
+    padding: 13px 0;
+    font-size: 14px;
+  }
+
+  .gold-widget-live {
+    font-size: 11px;
+    padding: 6px 9px;
+  }
+
+}
+
 </style>
+
+
+<script>
+
+(function () {
+
+  function getActiveCurrency(widget) {
+
+    /*
+     * Shopify Markets / currency selector
+     *
+     * Priority:
+     * 1. Shopify.currency.active
+     * 2. Shopify.currency.currency
+     * 3. Liquid currency from widget
+     * 4. Shop currency fallback
+     */
+
+    let currency = "";
+
+    if (
+      window.Shopify &&
+      window.Shopify.currency
+    ) {
+
+      currency =
+        window.Shopify.currency.active ||
+        window.Shopify.currency.currency ||
+        "";
+
+    }
+
+    if (!currency) {
+
+      currency =
+        widget.dataset.currency || "";
+
+    }
+
+    return String(currency || "USD")
+      .trim()
+      .toUpperCase();
+
+  }
+
+
+  function formatPrice(value, currency) {
+
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) {
+      return "—";
+    }
+
+    try {
+
+      return new Intl.NumberFormat(
+        undefined,
+        {
+          style: "currency",
+          currency: currency,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      ).format(number);
+
+    } catch (error) {
+
+      return (
+        currency +
+        " " +
+        number.toLocaleString(
+          undefined,
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        )
+      );
+
+    }
+
+  }
+
+
+  function initGoldWidget(widget) {
+
+    if (!widget) {
+      return;
+    }
+
+
+    if (widget.dataset.initialized === "true") {
+      return;
+    }
+
+    widget.dataset.initialized = "true";
+
+
+    const priceEl =
+      widget.querySelector(
+        "[data-gold-price]"
+      );
+
+    const goldValueEl =
+      widget.querySelector(
+        "[data-gold-value]"
+      );
+
+    const craftsmanshipEl =
+      widget.querySelector(
+        "[data-craftsmanship-value]"
+      );
+
+    const engravingEl =
+      widget.querySelector(
+        "[data-engraving-value]"
+      );
+
+    const packagingEl =
+      widget.querySelector(
+        "[data-packaging-value]"
+      );
+
+    const updatedEl =
+      widget.querySelector(
+        "[data-updated-text]"
+      );
+
+    const footerEl =
+      widget.querySelector(
+        "[data-footer-status]"
+      );
+
+    const currencyCodeEl =
+      widget.querySelector(
+        "[data-currency-code]"
+      );
+
+
+    const karat =
+      Number(widget.dataset.karat) || 22;
+
+    const weight =
+      Number(widget.dataset.weight) || 0;
+
+    const craftsmanshipPercent =
+      Number(widget.dataset.craftsmanship) || 0;
+
+    const engravingPercent =
+      Number(widget.dataset.engraving) || 0;
+
+    const packagingPercent =
+      Number(widget.dataset.packaging) || 0;
+
+
+    /*
+     * Get the actual storefront currency.
+     */
+
+    const currency =
+      getActiveCurrency(widget);
+
+
+    /*
+     * Show the same currency beside
+     * the live price.
+     */
+
+    if (currencyCodeEl) {
+
+      currencyCodeEl.textContent =
+        currency;
+
+    }
+
+
+    /*
+     * IMPORTANT:
+     *
+     * The backend receives the currency.
+     *
+     * Example:
+     *
+     * /apps/gold-price?currency=AED
+     *
+     * /apps/gold-price?currency=USD
+     *
+     * /apps/gold-price?currency=GBP
+     */
+
+    const apiUrl =
+      "/apps/gold-price?currency=" +
+      encodeURIComponent(currency);
+
+
+    fetch(
+      apiUrl,
+      {
+        method: "GET",
+
+        headers: {
+          "Accept": "application/json"
+        },
+
+        cache: "no-store"
+      }
+    )
+
+    .then(function (response) {
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Gold price request failed: " +
+          response.status
+        );
+
+      }
+
+      return response.json();
+
+    })
+
+    .then(function (data) {
+
+      if (
+        !data ||
+        !data.success ||
+        !data.prices
+      ) {
+
+        throw new Error(
+          "Invalid gold price response"
+        );
+
+      }
+
+
+      /*
+       * Use currency returned by backend.
+       *
+       * This prevents displaying
+       * a different currency accidentally.
+       */
+
+      const apiCurrency =
+        String(
+          data.currency ||
+          currency
+        )
+        .toUpperCase();
+
+
+      if (currencyCodeEl) {
+
+        currencyCodeEl.textContent =
+          apiCurrency;
+
+      }
+
+
+      const priceKey =
+        String(karat) + "k";
+
+
+      const pricePerGram =
+        Number(
+          data.prices[priceKey]
+        );
+
+
+      if (
+        !Number.isFinite(pricePerGram) ||
+        pricePerGram <= 0
+      ) {
+
+        throw new Error(
+          "Gold price unavailable"
+        );
+
+      }
+
+
+      /*
+       * GOLD VALUE
+       *
+       * Price per gram × weight
+       */
+
+      const goldValue =
+        pricePerGram * weight;
+
+
+      /*
+       * CRAFTSMANSHIP
+       *
+       * Gold Value × %
+       */
+
+      const craftsmanshipValue =
+        goldValue *
+        craftsmanshipPercent /
+        100;
+
+
+      /*
+       * PERSONAL ENGRAVING
+       *
+       * Gold Value × %
+       */
+
+      const engravingValue =
+        goldValue *
+        engravingPercent /
+        100;
+
+
+      /*
+       * PREMIUM PACKAGING
+       *
+       * Gold Value × %
+       */
+
+      const packagingValue =
+        goldValue *
+        packagingPercent /
+        100;
+
+
+      /*
+       * LIVE GOLD PRICE
+       */
+
+      if (priceEl) {
+
+        priceEl.textContent =
+          formatPrice(
+            pricePerGram,
+            apiCurrency
+          );
+
+      }
+
+
+      /*
+       * GOLD VALUE
+       */
+
+      if (goldValueEl) {
+
+        goldValueEl.textContent =
+          formatPrice(
+            goldValue,
+            apiCurrency
+          );
+
+      }
+
+
+      /*
+       * CRAFTSMANSHIP
+       */
+
+      if (craftsmanshipEl) {
+
+        craftsmanshipEl.textContent =
+          formatPrice(
+            craftsmanshipValue,
+            apiCurrency
+          );
+
+      }
+
+
+      /*
+       * PERSONAL ENGRAVING
+       */
+
+      if (engravingEl) {
+
+        engravingEl.textContent =
+          formatPrice(
+            engravingValue,
+            apiCurrency
+          );
+
+      }
+
+
+      /*
+       * PREMIUM PACKAGING
+       */
+
+      if (packagingEl) {
+
+        packagingEl.textContent =
+          formatPrice(
+            packagingValue,
+            apiCurrency
+          );
+
+      }
+
+
+      /*
+       * UPDATED TIME
+       */
+
+      if (
+        updatedEl &&
+        data.updatedAt
+      ) {
+
+        const updated =
+          new Date(
+            data.updatedAt
+          );
+
+
+        if (
+          !isNaN(
+            updated.getTime()
+          )
+        ) {
+
+          updatedEl.textContent =
+            "Updated " +
+            updated.toLocaleTimeString(
+              undefined,
+              {
+                hour: "2-digit",
+                minute: "2-digit"
+              }
+            );
+
+        } else {
+
+          updatedEl.textContent =
+            "Live";
+
+        }
+
+      } else if (updatedEl) {
+
+        updatedEl.textContent =
+          "Live";
+
+      }
+
+
+      /*
+       * Footer
+       */
+
+      if (footerEl) {
+
+        footerEl.textContent =
+          "Live gold price";
+
+      }
+
+    })
+
+    .catch(function (error) {
+
+      /*
+       * Technical errors stay in console.
+       * Customers do not see scary error messages.
+       */
+
+      console.error(
+        "Gold widget error:",
+        error
+      );
+
+
+      if (priceEl) {
+        priceEl.textContent = "—";
+      }
+
+
+      if (goldValueEl) {
+        goldValueEl.textContent = "—";
+      }
+
+
+      if (craftsmanshipEl) {
+        craftsmanshipEl.textContent = "—";
+      }
+
+
+      if (engravingEl) {
+        engravingEl.textContent = "—";
+      }
+
+
+      if (packagingEl) {
+        packagingEl.textContent = "—";
+      }
+
+
+      if (updatedEl) {
+
+        updatedEl.textContent =
+          "Price unavailable";
+
+      }
+
+
+      if (footerEl) {
+
+        footerEl.textContent =
+          "Gold price temporarily unavailable";
+
+      }
+
+    });
+
+  }
+
+
+  function initAllWidgets() {
+
+    const widgets =
+      document.querySelectorAll(
+        "[data-gold-widget]"
+      );
+
+
+    widgets.forEach(
+      function (widget) {
+
+        initGoldWidget(widget);
+
+      }
+    );
+
+  }
+
+
+  /*
+   * Initial load
+   */
+
+  if (
+    document.readyState === "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      initAllWidgets
+    );
+
+  } else {
+
+    initAllWidgets();
+
+  }
+
+
+  /*
+   * Shopify Theme Editor support
+   */
+
+  document.addEventListener(
+    "shopify:section:load",
+    function () {
+
+      initAllWidgets();
+
+    }
+  );
+
+
+})();
+
+</script>
+
 
 {% schema %}
 {

@@ -27,7 +27,7 @@ export async function getGoldPrices() {
     throw new Error("GoldAPI did not return a 24K gram price");
   }
 
-  const price24k = data.price_gram_24k;
+  const price24k = Number(data.price_gram_24k);
 
   return {
     "24k": price24k,
