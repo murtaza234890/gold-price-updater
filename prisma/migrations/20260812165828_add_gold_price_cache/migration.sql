@@ -1,0 +1,12 @@
+-- CreateTable
+CREATE TABLE "GoldPrice" (
+    "id" INTEGER NOT NULL DEFAULT 1,
+    "price24k" DOUBLE PRECISION NOT NULL,
+    "price22k" DOUBLE PRECISION NOT NULL,
+    "price20k" DOUBLE PRECISION NOT NULL,
+    "price18k" DOUBLE PRECISION NOT NULL,
+    "price14k" DOUBLE PRECISION NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "GoldPrice_pkey" PRIMARY KEY ("id")
+);

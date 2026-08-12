@@ -1,4 +1,4 @@
-import { getGoldPrices } from "../services/gold.server";
+import { getLatestGoldPrices } from "../services/gold.server";
 
 const USD_TO_AED = 3.6725;
 
@@ -26,10 +26,9 @@ export async function loader({ request }) {
   try {
     const url = new URL(request.url);
 
-    const currency =
-      (url.searchParams.get("currency") || "USD").toUpperCase();
-
-    const usdPrices = await getGoldPrices();
+    const currency = (
+      url.searchParams.get("currency") || "USD"
+    ).toUpperCase();
 
     const rate = CURRENCY_RATES[currency];
 
@@ -43,21 +42,39 @@ export async function loader({ request }) {
       );
     }
 
+    /*
+     * IMPORTANT:
+     *
+     * Read the latest gold prices from PostgreSQL.
+     *
+     * This function DOES NOT call GoldAPI.
+     *
+     * GoldAPI is only called when
+     * Update All Products is executed.
+     */
+    const savedGoldPrices =
+      await getLatestGoldPrices();
+
     const prices = Object.fromEntries(
-      Object.entries(usdPrices).map(([karat, price]) => [
-        karat,
-        Number(price) * rate,
-      ]),
+      Object.entries(savedGoldPrices)
+        .filter(([key]) => key !== "updatedAt")
+        .map(([karat, price]) => [
+          karat,
+          Number(price) * rate,
+        ]),
     );
 
     return Response.json({
       success: true,
       currency,
       prices,
-      updatedAt: new Date().toISOString(),
+      updatedAt: savedGoldPrices.updatedAt,
     });
   } catch (error) {
-    console.error("Gold price API error:", error);
+    console.error(
+      "Gold price API error:",
+      error,
+    );
 
     return Response.json(
       {

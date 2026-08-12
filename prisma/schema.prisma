@@ -1,5 +1,5 @@
 // This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// learn more about it: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -15,10 +15,10 @@ model Session {
   shop                 String
   state                String
   isOnline              Boolean   @default(false)
-  scope                 String?
+  scope                String?
   expires               DateTime?
   accessToken           String
-  userId                BigInt?
+  userId               BigInt?
   firstName             String?
   lastName              String?
   email                 String?
@@ -28,4 +28,14 @@ model Session {
   emailVerified         Boolean?  @default(false)
   refreshToken          String?
   refreshTokenExpires   DateTime?
+}
+
+model GoldPrice {
+  id        Int      @id @default(1)
+  price24k  Float
+  price22k  Float
+  price20k  Float
+  price18k  Float
+  price14k  Float
+  updatedAt DateTime @updatedAt
 }

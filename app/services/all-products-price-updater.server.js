@@ -1,4 +1,8 @@
-import { getGoldPrices } from "./gold.server";
+import {
+  getGoldPrices,
+  saveGoldPrices,
+} from "./gold.server";
+
 import { updateProductVariantPrices } from "./product-price-updater.server";
 
 const PRODUCTS_QUERY = `#graphql
@@ -75,9 +79,32 @@ const PRODUCTS_QUERY = `#graphql
 `;
 
 export async function updateAllProductPrices({ admin }) {
+  /*
+   * IMPORTANT:
+   *
+   * GoldAPI is called ONLY ONCE here.
+   *
+   * The same goldPrices object is then used
+   * for every product.
+   */
   const goldPrices = await getGoldPrices();
 
+  /*
+   * Save the latest successful GoldAPI prices
+   * into PostgreSQL.
+   *
+   * The storefront widget will later read
+   * these saved prices instead of calling GoldAPI.
+   */
+  await saveGoldPrices(goldPrices);
+
+  console.log(
+    "LATEST GOLD PRICES SAVED:",
+    JSON.stringify(goldPrices, null, 2),
+  );
+
   let cursor = null;
+
   let processedProducts = 0;
   let updatedProducts = 0;
   let skippedProducts = 0;
@@ -95,19 +122,29 @@ export async function updateAllProductPrices({ admin }) {
 
     if (result.errors) {
       throw new Error(
-        result.errors.map((error) => error.message).join(", "),
+        result.errors
+          .map((error) => error.message)
+          .join(", "),
       );
     }
 
     const products = result.data?.products;
 
     if (!products) {
-      throw new Error("Shopify did not return products");
+      throw new Error(
+        "Shopify did not return products",
+      );
     }
 
     for (const product of products.nodes) {
       processedProducts++;
 
+      /*
+       * Product must have both:
+       *
+       * gold_weight
+       * gold_purity
+       */
       if (
         !product.goldWeight?.value ||
         !product.goldPurity?.value
@@ -117,13 +154,17 @@ export async function updateAllProductPrices({ admin }) {
         results.push({
           product: product.title,
           status: "skipped",
-          reason: "Missing gold_weight or gold_purity",
+          reason:
+            "Missing gold_weight or gold_purity",
         });
 
         continue;
       }
 
       try {
+        /*
+         * Prepare product data for pricing calculation.
+         */
         const productForCalculation = {
           id: product.id,
 
@@ -131,7 +172,8 @@ export async function updateAllProductPrices({ admin }) {
             product.goldWeight.value,
           ),
 
-          goldKarat: product.goldPurity.value,
+          goldKarat:
+            product.goldPurity.value,
 
           craftsmanship: Number(
             product.craftsmanship?.value || 0,
@@ -146,10 +188,12 @@ export async function updateAllProductPrices({ admin }) {
           ),
 
           personalEngraving:
-            product.personalEngraving?.value === "true",
+            product.personalEngraving?.value ===
+            "true",
 
           premiumPackaging:
-            product.premiumPackaging?.value === "true",
+            product.premiumPackaging?.value ===
+            "true",
 
           variants: product.variants.nodes,
         };
@@ -163,6 +207,11 @@ export async function updateAllProductPrices({ admin }) {
           ),
         );
 
+        /*
+         * Calculate and update this product
+         * using the SAME goldPrices fetched
+         * at the beginning of this function.
+         */
         const updateResult =
           await updateProductVariantPrices({
             admin,
@@ -175,15 +224,22 @@ export async function updateAllProductPrices({ admin }) {
         results.push({
           product: product.title,
           status: "updated",
-          calculation: updateResult.calculation,
-          payments: updateResult.payments,
+
+          calculation:
+            updateResult.calculation,
+
+          payments:
+            updateResult.payments,
+
           updatedVariants:
             updateResult.updatedVariants,
         });
       } catch (error) {
         results.push({
           product: product.title,
+
           status: "error",
+
           reason:
             error instanceof Error
               ? error.message
@@ -192,6 +248,9 @@ export async function updateAllProductPrices({ admin }) {
       }
     }
 
+    /*
+     * Move to the next Shopify products page.
+     */
     cursor = products.pageInfo.hasNextPage
       ? products.pageInfo.endCursor
       : null;
@@ -199,10 +258,17 @@ export async function updateAllProductPrices({ admin }) {
 
   return {
     success: true,
+
+    /*
+     * Return the exact gold prices that were
+     * fetched from GoldAPI and saved to DB.
+     */
     goldPrices,
+
     processedProducts,
     updatedProducts,
     skippedProducts,
+
     results,
   };
 }
