@@ -22,6 +22,41 @@ const PRODUCTS_QUERY = `#graphql
           value
         }
 
+        craftsmanship: metafield(
+          namespace: "custom"
+          key: "craftsmanship"
+        ) {
+          value
+        }
+
+        personalEngravingFee: metafield(
+          namespace: "custom"
+          key: "personal_engraving_fee"
+        ) {
+          value
+        }
+
+        premiumPackagingFee: metafield(
+          namespace: "custom"
+          key: "premium_packaging_fee"
+        ) {
+          value
+        }
+
+        personalEngraving: metafield(
+          namespace: "custom"
+          key: "personal_engraving"
+        ) {
+          value
+        }
+
+        premiumPackaging: metafield(
+          namespace: "custom"
+          key: "premium_packaging"
+        ) {
+          value
+        }
+
         variants(first: 100) {
           nodes {
             id
@@ -46,6 +81,7 @@ export async function updateAllProductPrices({ admin }) {
   let processedProducts = 0;
   let updatedProducts = 0;
   let skippedProducts = 0;
+
   const results = [];
 
   do {
@@ -72,8 +108,10 @@ export async function updateAllProductPrices({ admin }) {
     for (const product of products.nodes) {
       processedProducts++;
 
-      // Product must have both metafields
-      if (!product.goldWeight?.value || !product.goldPurity?.value) {
+      if (
+        !product.goldWeight?.value ||
+        !product.goldPurity?.value
+      ) {
         skippedProducts++;
 
         results.push({
@@ -88,16 +126,49 @@ export async function updateAllProductPrices({ admin }) {
       try {
         const productForCalculation = {
           id: product.id,
-          goldWeight: Number(product.goldWeight.value),
+
+          goldWeight: Number(
+            product.goldWeight.value,
+          ),
+
           goldKarat: product.goldPurity.value,
+
+          craftsmanship: Number(
+            product.craftsmanship?.value || 0,
+          ),
+
+          personalEngravingFee: Number(
+            product.personalEngravingFee?.value || 0,
+          ),
+
+          premiumPackagingFee: Number(
+            product.premiumPackagingFee?.value || 0,
+          ),
+
+          personalEngraving:
+            product.personalEngraving?.value === "true",
+
+          premiumPackaging:
+            product.premiumPackaging?.value === "true",
+
           variants: product.variants.nodes,
         };
 
-        const updateResult = await updateProductVariantPrices({
-          admin,
-          product: productForCalculation,
-          goldPrices,
-        });
+        console.log(
+          "PRODUCT FOR CALCULATION:",
+          JSON.stringify(
+            productForCalculation,
+            null,
+            2,
+          ),
+        );
+
+        const updateResult =
+          await updateProductVariantPrices({
+            admin,
+            product: productForCalculation,
+            goldPrices,
+          });
 
         updatedProducts++;
 
@@ -106,14 +177,17 @@ export async function updateAllProductPrices({ admin }) {
           status: "updated",
           calculation: updateResult.calculation,
           payments: updateResult.payments,
-          updatedVariants: updateResult.updatedVariants,
+          updatedVariants:
+            updateResult.updatedVariants,
         });
       } catch (error) {
         results.push({
           product: product.title,
           status: "error",
           reason:
-            error instanceof Error ? error.message : "Unknown error",
+            error instanceof Error
+              ? error.message
+              : "Unknown error",
         });
       }
     }

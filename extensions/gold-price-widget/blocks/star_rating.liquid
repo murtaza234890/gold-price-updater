@@ -1,3 +1,4 @@
+```liquid
 {% assign gold_purity = product.metafields.custom.gold_purity.value | default: "22K" %}
 {% assign gold_weight = product.metafields.custom.gold_weight.value | default: 0 %}
 {% assign craftsmanship = product.metafields.custom.craftsmanship.value | default: 0 %}
@@ -23,7 +24,9 @@
 >
 
   <div class="gold-widget-header">
+
     <div>
+
       <div class="gold-widget-label">
         LIVE GOLD PRICE
       </div>
@@ -31,95 +34,171 @@
       <div class="gold-widget-title">
         {{ gold_purity }} Gold
       </div>
+
     </div>
 
     <div class="gold-widget-live">
+
       <span class="gold-live-dot"></span>
-      <span data-updated-text>Loading...</span>
+
+      <span data-updated-text>
+        Loading...
+      </span>
+
     </div>
+
   </div>
 
 
   <div class="gold-widget-price">
-    <span data-gold-price>—</span>
+
+    <span data-gold-price>
+      —
+    </span>
 
     <span class="gold-widget-unit">
-      <span data-currency-code>{{ shop_currency }}</span> / g
+      <span data-currency-code>
+        {{ shop_currency }}
+      </span>
+      / g
     </span>
+
   </div>
 
 
   <div class="gold-widget-details">
 
     <div class="gold-widget-row">
-      <span>Weight</span>
+
+      <span>
+        Weight
+      </span>
 
       <strong>
         {{ gold_weight }} g
       </strong>
+
     </div>
 
 
     <div class="gold-widget-row">
-      <span>Karat</span>
+
+      <span>
+        Karat
+      </span>
 
       <strong>
         {{ gold_purity }}
       </strong>
+
     </div>
 
 
-    <div class="gold-widget-row gold-widget-total">
-      <span>Gold Value</span>
+    <div class="gold-widget-row">
 
-      <strong data-gold-value>—</strong>
+      <span>
+        Gold Value
+      </span>
+
+      <strong data-gold-value>
+        —
+      </strong>
+
     </div>
 
 
     {% if craftsmanship > 0 %}
+
       <div class="gold-widget-row">
+
         <span>
+
           Craftsmanship
-          <small>{{ craftsmanship }}%</small>
+
+          <small>
+            {{ craftsmanship }}%
+          </small>
+
         </span>
 
-        <strong data-craftsmanship-value>—</strong>
+        <strong data-craftsmanship-value>
+          —
+        </strong>
+
       </div>
+
     {% endif %}
 
 
     {% if engraving_enabled %}
+
       <div class="gold-widget-row">
+
         <span>
+
           Personal Engraving
-          <small>{{ engraving_fee }}%</small>
+
+          <small>
+            {{ engraving_fee }}%
+          </small>
+
         </span>
 
-        <strong data-engraving-value>—</strong>
+        <strong data-engraving-value>
+          —
+        </strong>
+
       </div>
+
     {% endif %}
 
 
     {% if packaging_enabled %}
+
       <div class="gold-widget-row">
+
         <span>
+
           Premium Packaging
-          <small>{{ packaging_fee }}%</small>
+
+          <small>
+            {{ packaging_fee }}%
+          </small>
+
         </span>
 
-        <strong data-packaging-value>—</strong>
+        <strong data-packaging-value>
+          —
+        </strong>
+
       </div>
+
     {% endif %}
+
+
+    <div class="gold-widget-row gold-widget-final-total">
+
+      <span>
+        Product Price
+      </span>
+
+      <strong data-final-product-price>
+        —
+      </strong>
+
+    </div>
 
   </div>
 
 
   <div class="gold-widget-footer">
+
     <span class="gold-footer-dot"></span>
 
     <span data-footer-status>
       Live gold price
     </span>
+
   </div>
 
 </div>
@@ -128,9 +207,12 @@
 <style>
 
 .gold-price-widget {
+
   width: 100%;
   max-width: 520px;
+
   box-sizing: border-box;
+
   padding: 24px;
   margin: 20px 0;
 
@@ -142,88 +224,143 @@
 
   font-family: inherit;
 
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.05);
+
 }
+
 
 .gold-widget-header {
+
   display: flex;
+
   align-items: flex-start;
+
   justify-content: space-between;
+
   gap: 20px;
+
 }
+
 
 .gold-widget-label {
+
   font-size: 10px;
+
   font-weight: 700;
+
   letter-spacing: 1.8px;
+
   color: #8a8a8a;
+
   margin-bottom: 7px;
+
 }
+
 
 .gold-widget-title {
+
   font-size: 24px;
+
   line-height: 1.2;
+
   font-weight: 650;
+
   color: #171717;
+
 }
 
+
 .gold-widget-live {
+
   display: flex;
+
   align-items: center;
+
   gap: 7px;
 
   padding: 7px 11px;
+
   border-radius: 20px;
 
   background: #f3f8f3;
+
   color: #527157;
 
   font-size: 12px;
+
   white-space: nowrap;
+
 }
 
+
 .gold-live-dot {
+
   width: 8px;
   height: 8px;
+
   flex-shrink: 0;
 
   border-radius: 50%;
+
   background: #5b8a5e;
 
   box-shadow:
     0 0 0 3px rgba(91, 138, 94, 0.12);
+
 }
 
+
 .gold-widget-price {
+
   display: flex;
+
   align-items: baseline;
+
   gap: 8px;
 
   margin: 32px 0 25px;
+
 }
 
+
 .gold-widget-price [data-gold-price] {
+
   font-size: 32px;
+
   line-height: 1;
 
   font-weight: 700;
+
   letter-spacing: -0.8px;
 
   color: #171717;
+
 }
+
 
 .gold-widget-unit {
+
   font-size: 14px;
+
   color: #888;
+
 }
+
 
 .gold-widget-details {
+
   border-top: 1px solid #eeeeee;
+
 }
 
+
 .gold-widget-row {
+
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
   gap: 20px;
@@ -233,95 +370,180 @@
   border-bottom: 1px solid #eeeeee;
 
   font-size: 15px;
+
 }
+
 
 .gold-widget-row > span {
+
   color: #666;
+
 }
 
+
 .gold-widget-row strong {
+
   color: #171717;
+
   font-weight: 600;
 
   text-align: right;
+
   white-space: nowrap;
+
 }
 
+
 .gold-widget-row small {
+
   display: block;
 
   margin-top: 4px;
 
   font-size: 11px;
+
   line-height: 1;
 
   color: #999;
 
   font-weight: 400;
+
 }
+
 
 .gold-widget-total {
+
   padding-top: 17px;
   padding-bottom: 17px;
+
 }
+
 
 .gold-widget-total > span {
+
   color: #222;
+
   font-weight: 650;
+
 }
+
 
 .gold-widget-total strong {
+
   font-size: 16px;
+
 }
 
+
+.gold-widget-final-total {
+
+  padding-top: 17px;
+
+  padding-bottom: 17px;
+
+  border-bottom: none;
+
+}
+
+
+.gold-widget-final-total > span {
+
+  color: #222;
+
+  font-weight: 700;
+
+}
+
+
+.gold-widget-final-total strong {
+
+  font-size: 18px;
+
+  font-weight: 700;
+
+}
+
+
 .gold-widget-footer {
+
   display: flex;
+
   align-items: center;
+
   gap: 7px;
 
   margin-top: 16px;
 
   font-size: 11px;
+
   color: #999;
+
 }
 
+
 .gold-footer-dot {
+
   width: 5px;
   height: 5px;
+
   flex-shrink: 0;
 
   border-radius: 50%;
+
   background: #5b8a5e;
+
 }
+
 
 @media screen and (max-width: 749px) {
 
   .gold-price-widget {
+
     padding: 18px;
+
     margin: 15px 0;
+
     border-radius: 14px;
+
   }
+
 
   .gold-widget-title {
+
     font-size: 21px;
+
   }
+
 
   .gold-widget-price {
+
     margin-top: 28px;
+
   }
+
 
   .gold-widget-price [data-gold-price] {
+
     font-size: 28px;
+
   }
+
 
   .gold-widget-row {
+
     padding: 13px 0;
+
     font-size: 14px;
+
   }
 
+
   .gold-widget-live {
+
     font-size: 11px;
+
     padding: 6px 9px;
+
   }
 
 }
@@ -333,19 +555,22 @@
 
 (function () {
 
+
   function getActiveCurrency(widget) {
 
     /*
      * Shopify Markets / currency selector
      *
      * Priority:
+     *
      * 1. Shopify.currency.active
      * 2. Shopify.currency.currency
      * 3. Liquid currency from widget
-     * 4. Shop currency fallback
+     * 4. USD fallback
      */
 
     let currency = "";
+
 
     if (
       window.Shopify &&
@@ -359,12 +584,14 @@
 
     }
 
+
     if (!currency) {
 
       currency =
         widget.dataset.currency || "";
 
     }
+
 
     return String(currency || "USD")
       .trim()
@@ -377,9 +604,13 @@
 
     const number = Number(value);
 
+
     if (!Number.isFinite(number)) {
+
       return "—";
+
     }
+
 
     try {
 
@@ -388,7 +619,9 @@
         {
           style: "currency",
           currency: currency,
+
           minimumFractionDigits: 2,
+
           maximumFractionDigits: 2
         }
       ).format(number);
@@ -415,13 +648,20 @@
   function initGoldWidget(widget) {
 
     if (!widget) {
+
       return;
+
     }
 
 
-    if (widget.dataset.initialized === "true") {
+    if (
+      widget.dataset.initialized === "true"
+    ) {
+
       return;
+
     }
+
 
     widget.dataset.initialized = "true";
 
@@ -431,35 +671,48 @@
         "[data-gold-price]"
       );
 
+
     const goldValueEl =
       widget.querySelector(
         "[data-gold-value]"
       );
+
 
     const craftsmanshipEl =
       widget.querySelector(
         "[data-craftsmanship-value]"
       );
 
+
     const engravingEl =
       widget.querySelector(
         "[data-engraving-value]"
       );
+
 
     const packagingEl =
       widget.querySelector(
         "[data-packaging-value]"
       );
 
+
+    const finalProductPriceEl =
+      widget.querySelector(
+        "[data-final-product-price]"
+      );
+
+
     const updatedEl =
       widget.querySelector(
         "[data-updated-text]"
       );
 
+
     const footerEl =
       widget.querySelector(
         "[data-footer-status]"
       );
+
 
     const currencyCodeEl =
       widget.querySelector(
@@ -470,17 +723,29 @@
     const karat =
       Number(widget.dataset.karat) || 22;
 
+
     const weight =
       Number(widget.dataset.weight) || 0;
+
 
     const craftsmanshipPercent =
       Number(widget.dataset.craftsmanship) || 0;
 
+
     const engravingPercent =
       Number(widget.dataset.engraving) || 0;
 
+
     const packagingPercent =
       Number(widget.dataset.packaging) || 0;
+
+
+    const engravingEnabled =
+      widget.dataset.engravingEnabled === "true";
+
+
+    const packagingEnabled =
+      widget.dataset.packagingEnabled === "true";
 
 
     /*
@@ -492,8 +757,7 @@
 
 
     /*
-     * Show the same currency beside
-     * the live price.
+     * Show currency beside live gold price.
      */
 
     if (currencyCodeEl) {
@@ -505,17 +769,11 @@
 
 
     /*
-     * IMPORTANT:
-     *
-     * The backend receives the currency.
+     * Backend gold-price endpoint.
      *
      * Example:
      *
      * /apps/gold-price?currency=AED
-     *
-     * /apps/gold-price?currency=USD
-     *
-     * /apps/gold-price?currency=GBP
      */
 
     const apiUrl =
@@ -547,9 +805,11 @@
 
       }
 
+
       return response.json();
 
     })
+
 
     .then(function (data) {
 
@@ -568,9 +828,6 @@
 
       /*
        * Use currency returned by backend.
-       *
-       * This prevents displaying
-       * a different currency accidentally.
        */
 
       const apiCurrency =
@@ -588,6 +845,14 @@
 
       }
 
+
+      /*
+       * Example:
+       *
+       * 18K -> 18k
+       * 22K -> 22k
+       * 24K -> 24k
+       */
 
       const priceKey =
         String(karat) + "k";
@@ -614,7 +879,11 @@
       /*
        * GOLD VALUE
        *
-       * Price per gram × weight
+       * Live gold price per gram
+       * × product gold weight.
+       *
+       * This is the actual gold portion
+       * of the final product price.
        */
 
       const goldValue =
@@ -622,13 +891,117 @@
 
 
       /*
+       * TOTAL ACTIVE FEE PERCENTAGE
+       *
+       * Craftsmanship is always included
+       * when its percentage is greater than 0.
+       *
+       * Engraving is included only when
+       * the metafield is enabled.
+       *
+       * Packaging is included only when
+       * the metafield is enabled.
+       */
+
+      let totalFeePercent = 0;
+
+
+      if (craftsmanshipPercent > 0) {
+
+        totalFeePercent +=
+          craftsmanshipPercent;
+
+      }
+
+
+      if (
+        engravingEnabled &&
+        engravingPercent > 0
+      ) {
+
+        totalFeePercent +=
+          engravingPercent;
+
+      }
+
+
+      if (
+        packagingEnabled &&
+        packagingPercent > 0
+      ) {
+
+        totalFeePercent +=
+          packagingPercent;
+
+      }
+
+
+      /*
+       * GOLD PORTION
+       *
+       * Example:
+       *
+       * Craftsmanship = 20%
+       * Engraving = 5%
+       * Packaging = 3%
+       *
+       * Total fees = 28%
+       *
+       * Gold portion = 72%
+       */
+
+      const goldPortionPercent =
+        100 - totalFeePercent;
+
+
+      /*
+       * Prevent division by zero
+       * or an invalid percentage setup.
+       */
+
+      if (
+        goldPortionPercent <= 0
+      ) {
+
+        throw new Error(
+          "Invalid fee percentages. Total fee percentage must be less than 100%."
+        );
+
+      }
+
+
+      /*
+       * FINAL PRODUCT PRICE
+       *
+       * Gold Value represents the remaining
+       * percentage of the final product price.
+       *
+       * Example:
+       *
+       * Gold Value = 720
+       * Total fees = 28%
+       * Gold portion = 72%
+       *
+       * Final Product Price =
+       *
+       * 720 / 0.72
+       *
+       * = 1000
+       */
+
+      const finalProductPrice =
+        goldValue /
+        (goldPortionPercent / 100);
+
+
+      /*
        * CRAFTSMANSHIP
        *
-       * Gold Value × %
+       * Percentage of FINAL PRODUCT PRICE.
        */
 
       const craftsmanshipValue =
-        goldValue *
+        finalProductPrice *
         craftsmanshipPercent /
         100;
 
@@ -636,25 +1009,29 @@
       /*
        * PERSONAL ENGRAVING
        *
-       * Gold Value × %
+       * Percentage of FINAL PRODUCT PRICE.
        */
 
       const engravingValue =
-        goldValue *
-        engravingPercent /
-        100;
+        engravingEnabled
+          ? finalProductPrice *
+            engravingPercent /
+            100
+          : 0;
 
 
       /*
        * PREMIUM PACKAGING
        *
-       * Gold Value × %
+       * Percentage of FINAL PRODUCT PRICE.
        */
 
       const packagingValue =
-        goldValue *
-        packagingPercent /
-        100;
+        packagingEnabled
+          ? finalProductPrice *
+            packagingPercent /
+            100
+          : 0;
 
 
       /*
@@ -733,6 +1110,21 @@
 
 
       /*
+       * FINAL PRODUCT PRICE
+       */
+
+      if (finalProductPriceEl) {
+
+        finalProductPriceEl.textContent =
+          formatPrice(
+            finalProductPrice,
+            apiCurrency
+          );
+
+      }
+
+
+      /*
        * UPDATED TIME
        */
 
@@ -791,11 +1183,11 @@
 
     })
 
+
     .catch(function (error) {
 
       /*
        * Technical errors stay in console.
-       * Customers do not see scary error messages.
        */
 
       console.error(
@@ -805,27 +1197,50 @@
 
 
       if (priceEl) {
-        priceEl.textContent = "—";
+
+        priceEl.textContent =
+          "—";
+
       }
 
 
       if (goldValueEl) {
-        goldValueEl.textContent = "—";
+
+        goldValueEl.textContent =
+          "—";
+
       }
 
 
       if (craftsmanshipEl) {
-        craftsmanshipEl.textContent = "—";
+
+        craftsmanshipEl.textContent =
+          "—";
+
       }
 
 
       if (engravingEl) {
-        engravingEl.textContent = "—";
+
+        engravingEl.textContent =
+          "—";
+
       }
 
 
       if (packagingEl) {
-        packagingEl.textContent = "—";
+
+        packagingEl.textContent =
+          "—";
+
+      }
+
+
+      if (finalProductPriceEl) {
+
+        finalProductPriceEl.textContent =
+          "—";
+
       }
 
 
@@ -914,3 +1329,4 @@
   "settings": []
 }
 {% endschema %}
+```
