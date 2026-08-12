@@ -40,6 +40,41 @@ export async function action({ request }) {
               value
             }
 
+            craftsmanship: metafield(
+              namespace: "custom"
+              key: "craftsmanship"
+            ) {
+              value
+            }
+
+            personalEngravingFee: metafield(
+              namespace: "custom"
+              key: "personal_engraving_fee"
+            ) {
+              value
+            }
+
+            premiumPackagingFee: metafield(
+              namespace: "custom"
+              key: "premium_packaging_fee"
+            ) {
+              value
+            }
+
+            personalEngraving: metafield(
+              namespace: "custom"
+              key: "personal_engraving"
+            ) {
+              value
+            }
+
+            premiumPackaging: metafield(
+              namespace: "custom"
+              key: "premium_packaging"
+            ) {
+              value
+            }
+
             variants(first: 100) {
               nodes {
                 id
@@ -89,14 +124,42 @@ export async function action({ request }) {
 
     const productForCalculation = {
       id: product.id,
+
       goldWeight: Number(product.goldWeight.value),
+
       goldKarat: product.goldPurity.value,
+
+      craftsmanship: Number(
+        product.craftsmanship?.value || 0,
+      ),
+
+      personalEngravingFee: Number(
+        product.personalEngravingFee?.value || 0,
+      ),
+
+      premiumPackagingFee: Number(
+        product.premiumPackagingFee?.value || 0,
+      ),
+
+      personalEngraving:
+        product.personalEngraving?.value === "true",
+
+      premiumPackaging:
+        product.premiumPackaging?.value === "true",
+
       variants: product.variants.nodes,
     };
-console.log(
-  "SHOPIFY VARIANTS:",
-  JSON.stringify(product.variants.nodes, null, 2),
-);
+
+    console.log(
+      "PRODUCT FOR CALCULATION:",
+      JSON.stringify(productForCalculation, null, 2),
+    );
+
+    console.log(
+      "SHOPIFY VARIANTS:",
+      JSON.stringify(product.variants.nodes, null, 2),
+    );
+
     const updateResult = await updateProductVariantPrices({
       admin,
       product: productForCalculation,
@@ -115,12 +178,16 @@ console.log(
     return Response.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unknown error",
       },
       { status: 500 },
     );
   }
 }
+
 export async function loader() {
   return Response.json({
     message: "Use POST to update product prices",
