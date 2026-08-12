@@ -8,12 +8,18 @@ on:
 jobs:
   update-gold-prices:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Update Shopify product gold prices
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          curl --fail --show-error --location \
+          set -e
+          curl --fail --show-error --silent --location \
             --max-time 180 \
+            --retry 2 \
+            --retry-delay 5 \
             --request GET \
-            --header "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
             "https://gold-price-updater-vx23.onrender.com/api/scheduled-price-update"
