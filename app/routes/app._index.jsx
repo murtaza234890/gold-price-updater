@@ -61,26 +61,47 @@ export default function Index() {
       {fetcher.data?.success && (
         <s-section heading="Update Result">
           <s-stack direction="block" gap="base">
+
             <s-paragraph>
-              Products found: {fetcher.data.productsFound}
+              Products found:{" "}
+              {fetcher.data.processedProducts ?? 0}
             </s-paragraph>
 
             <s-paragraph>
-              Products updated: {fetcher.data.updatedProducts}
+              Products updated:{" "}
+              {fetcher.data.updatedProducts ?? 0}
             </s-paragraph>
 
             <s-paragraph>
-              Products skipped: {fetcher.data.skippedProducts}
+              Products skipped:{" "}
+              {fetcher.data.skippedProducts ?? 0}
             </s-paragraph>
 
-            {fetcher.data.results?.map((product) => (
+            <s-paragraph>
+              Products with errors:{" "}
+              {fetcher.data.errorProducts ?? 0}
+            </s-paragraph>
+
+            {fetcher.data.currency && (
+              <s-paragraph>
+                Store currency: {fetcher.data.currency}
+              </s-paragraph>
+            )}
+
+            {fetcher.data.results?.map((product, index) => (
               <s-section
-                key={product.productId}
-                heading={product.title}
+                key={`${product.product}-${index}`}
+                heading={product.product || "Product"}
               >
                 <s-paragraph>
-                  {product.status}
+                  Status: {product.status}
                 </s-paragraph>
+
+                {product.reason && (
+                  <s-paragraph>
+                    Reason: {product.reason}
+                  </s-paragraph>
+                )}
 
                 {product.updatedVariants?.map((variant) => (
                   <s-paragraph key={variant.id}>
@@ -89,6 +110,7 @@ export default function Index() {
                 ))}
               </s-section>
             ))}
+
           </s-stack>
         </s-section>
       )}
