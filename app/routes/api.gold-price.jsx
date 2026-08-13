@@ -1,4 +1,3 @@
-import { authenticate } from "../shopify.server";
 import { getLatestGoldPrices } from "../services/gold.server";
 
 const USD_TO_AED = 3.6725;
@@ -23,76 +22,39 @@ const CURRENCY_RATES = {
   CNY: 7.18,
 };
 
-const SHOP_CURRENCY_QUERY = `#graphql
-  query GetShopCurrency {
-    shop {
-      currencyCode
-    }
-  }
-`;
-
 export async function loader({ request }) {
   try {
-    const { admin } = await authenticate.admin(request);
+    const url = new URL(request.url);
 
-    /*
-     * Get the store's actual Shopify currency.
-     *
-     * Example:
-     * USD store -> USD
-     * UAE store  -> AED
-     */
-    const response = await admin.graphql(
-      SHOP_CURRENCY_QUERY,
-    );
-
-    const result = await response.json();
-
-    if (result.errors) {
-      throw new Error(
-        result.errors
-          .map((error) => error.message)
-          .join(", "),
-      );
-    }
-
-    const currency =
-      result.data?.shop?.currencyCode;
-
-    if (!currency) {
-      throw new Error(
-        "Shopify store currency could not be determined",
-      );
-    }
+    const currency = (
+      url.searchParams.get("currency") || "USD"
+    ).toUpperCase();
 
     const rate = CURRENCY_RATES[currency];
 
-    if (rate === undefined) {
+    if (!rate) {
       return Response.json(
         {
           success: false,
-          error: `Currency ${currency} is not supported yet`,
+          error: `Unsupported currency: ${currency}`,
         },
         { status: 400 },
       );
     }
 
     /*
-     * Read the latest saved gold prices from PostgreSQL.
+     * IMPORTANT:
      *
-     * This does NOT call GoldAPI.
+     * Read the latest gold prices from PostgreSQL.
      *
-     * GoldAPI is called only when
+     * This function DOES NOT call GoldAPI.
+     *
+     * GoldAPI is only called when
      * Update All Products is executed.
      */
     const savedGoldPrices =
       await getLatestGoldPrices();
 
-    /*
-     * Saved gold prices are stored in USD.
-     *
-     * Convert them into the Shopify store currency.
-     */
     const prices = Object.fromEntries(
       Object.entries(savedGoldPrices)
         .filter(([key]) => key !== "updatedAt")
@@ -104,20 +66,9 @@ export async function loader({ request }) {
 
     return Response.json({
       success: true,
-
-      /*
-       * Currency automatically comes from Shopify.
-       */
       currency,
-
-      /*
-       * Keep the property name consistent
-       * with GoldPrices.jsx.
-       */
       goldPrices: prices,
-
-      updatedAt:
-        savedGoldPrices.updatedAt,
+      updatedAt: savedGoldPrices.updatedAt,
     });
   } catch (error) {
     console.error(
@@ -128,7 +79,6 @@ export async function loader({ request }) {
     return Response.json(
       {
         success: false,
-
         error:
           error instanceof Error
             ? error.message
