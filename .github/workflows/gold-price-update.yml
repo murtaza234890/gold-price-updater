@@ -2,7 +2,7 @@ name: Automatic Gold Price Update
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "0 4,15 * * *"
   workflow_dispatch:
 
 jobs:
