@@ -67,7 +67,7 @@ export async function loader({ request }) {
     return Response.json({
       success: true,
       currency,
-      prices,
+      goldPrices: prices,
       updatedAt: savedGoldPrices.updatedAt,
     });
   } catch (error) {
