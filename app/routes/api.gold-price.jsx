@@ -26,13 +26,23 @@ export async function loader({ request }) {
   try {
     const url = new URL(request.url);
 
+    /*
+     * Default currency is AED.
+     *
+     * This keeps the existing API compatible with
+     * the storefront widget while making the admin
+     * Gold Prices page show AED by default.
+     *
+     * A different supported currency can still be
+     * requested with ?currency=USD etc.
+     */
     const currency = (
-      url.searchParams.get("currency") || "USD"
+      url.searchParams.get("currency") || "AED"
     ).toUpperCase();
 
     const rate = CURRENCY_RATES[currency];
 
-    if (!rate) {
+    if (rate === undefined) {
       return Response.json(
         {
           success: false,
@@ -43,11 +53,10 @@ export async function loader({ request }) {
     }
 
     /*
+     * Read the latest saved gold prices from PostgreSQL.
+     *
      * IMPORTANT:
-     *
-     * Read the latest gold prices from PostgreSQL.
-     *
-     * This function DOES NOT call GoldAPI.
+     * This does NOT call GoldAPI.
      *
      * GoldAPI is only called when
      * Update All Products is executed.
@@ -55,6 +64,11 @@ export async function loader({ request }) {
     const savedGoldPrices =
       await getLatestGoldPrices();
 
+    /*
+     * Saved prices are stored in USD.
+     *
+     * Convert them to the requested currency.
+     */
     const prices = Object.fromEntries(
       Object.entries(savedGoldPrices)
         .filter(([key]) => key !== "updatedAt")
@@ -66,8 +80,26 @@ export async function loader({ request }) {
 
     return Response.json({
       success: true,
+
+      /*
+       * Currency used for these prices.
+       */
       currency,
-       prices,
+
+      /*
+       * Keep `prices` because the storefront
+       * widget already uses this property.
+       *
+       * DO NOT remove it.
+       */
+      prices,
+
+      /*
+       * Also provide `goldPrices` for the
+       * admin Gold Prices page.
+       */
+      goldPrices: prices,
+
       updatedAt: savedGoldPrices.updatedAt,
     });
   } catch (error) {
