@@ -94,12 +94,18 @@ export async function saveGoldPrices(goldPrices) {
     },
   });
 
-  await prisma.goldPriceHistory.create({
-    data: {
-      ...prices,
-      currency: "AED",
-    },
-  });
+  const historyRate = 3.6725;
+
+await prisma.goldPriceHistory.create({
+  data: {
+    price24k: prices.price24k * historyRate,
+    price22k: prices.price22k * historyRate,
+    price20k: prices.price20k * historyRate,
+    price18k: prices.price18k * historyRate,
+    price14k: prices.price14k * historyRate,
+    currency: "AED",
+  },
+});
 
   return latestPrice;
 }
