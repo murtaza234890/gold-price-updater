@@ -39,3 +39,15 @@ model GoldPrice {
   price14k  Float
   updatedAt DateTime @updatedAt
 }
+model GoldPriceHistory {
+  id        Int      @id @default(autoincrement())
+  price24k  Float
+  price22k  Float
+  price20k  Float
+  price18k  Float
+  price14k  Float
+  currency  String   @default("AED")
+  updatedAt DateTime @default(now())
+
+  @@index([updatedAt])
+}

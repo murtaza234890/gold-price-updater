@@ -81,7 +81,7 @@ export async function saveGoldPrices(goldPrices) {
     }
   }
 
-  return prisma.goldPrice.upsert({
+    const latestPrice = await prisma.goldPrice.upsert({
     where: {
       id: 1,
     },
@@ -93,6 +93,15 @@ export async function saveGoldPrices(goldPrices) {
       ...prices,
     },
   });
+
+  await prisma.goldPriceHistory.create({
+    data: {
+      ...prices,
+      currency: "AED",
+    },
+  });
+
+  return latestPrice;
 }
 
 /**

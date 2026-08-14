@@ -19,6 +19,7 @@ export default function App() {
         <s-link href="/app">Home</s-link>
         <s-link href="/app/gold-prices">Gold Prices</s-link>
         <s-link href="/app/products">Products</s-link>
+        <s-link href="/app/price-history">Price History</s-link>
         <s-link href="/app/additional">Additional</s-link>
       </s-app-nav>
 
