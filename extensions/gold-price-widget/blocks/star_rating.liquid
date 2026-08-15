@@ -32,7 +32,7 @@
 
     <div class="gold-widget-live">
       <span class="gold-live-dot"></span>
-      <span data-updated-text>Loading...</span>
+      <span data-updated-text>LIVE</span>
     </div>
   </div>
 
@@ -69,8 +69,14 @@
       <strong data-gold-value>—</strong>
     </div>
 
-    <div class="gold-widget-row">
-      <span>Atelier Fee</span>
+    <div class="gold-widget-row gold-widget-atelier-row">
+      <div class="gold-widget-atelier-label">
+        <span>Atelier Fee</span>
+
+        <small>
+          (The atelier fee includes the design development, craftsmanship and manufacturing, quality finishing, and signature packaging)
+        </small>
+      </div>
 
       <strong data-atelier-fee>—</strong>
     </div>
@@ -245,6 +251,35 @@
 }
 
 
+/* Atelier Fee */
+
+.gold-widget-atelier-label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  min-width: 0;
+}
+
+
+.gold-widget-atelier-label > span {
+  color: #666;
+}
+
+
+.gold-widget-atelier-label small {
+  max-width: 330px;
+
+  color: #999;
+
+  font-size: 10px;
+  line-height: 1.4;
+
+  font-weight: 400;
+}
+
+
 .gold-widget-final-total {
   padding-top: 18px;
   padding-bottom: 4px;
@@ -331,6 +366,13 @@
     font-size: 11px;
 
     padding: 6px 9px;
+  }
+
+
+  .gold-widget-atelier-label small {
+    max-width: 220px;
+
+    font-size: 9px;
   }
 
 }
@@ -831,50 +873,18 @@
 
 
       /*
-       * UPDATED TIME
+       * LIVE STATUS
        *
-       * This is the timestamp of the saved
-       * database gold price.
+       * The widget intentionally shows
+       * LIVE instead of the saved
+       * database timestamp.
        */
 
-      if (
-        updatedEl &&
-        data.updatedAt
-      ) {
-
-        const updated =
-          new Date(
-            data.updatedAt
-          );
-
-
-        if (
-          !isNaN(
-            updated.getTime()
-          )
-        ) {
-
-          updatedEl.textContent =
-            "Updated " +
-            updated.toLocaleTimeString(
-              undefined,
-              {
-                hour: "2-digit",
-                minute: "2-digit"
-              }
-            );
-
-        } else {
-
-          updatedEl.textContent =
-            "Latest price";
-
-        }
-
-      } else if (updatedEl) {
+      if (updatedEl) {
 
         updatedEl.textContent =
-          "Latest price";
+          "LIVE";
+
       }
 
 
