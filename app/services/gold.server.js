@@ -52,6 +52,7 @@ export async function getGoldPrices() {
   return {
     "24k": price24k,
     "22k": price24k * (22 / 24),
+    "21k": price24k * (21 / 24),
     "20k": price24k * (20 / 24),
     "18k": price24k * (18 / 24),
     "14k": price24k * (14 / 24),
@@ -68,6 +69,7 @@ export async function saveGoldPrices(goldPrices) {
   const prices = {
     price24k: Number(goldPrices["24k"]),
     price22k: Number(goldPrices["22k"]),
+    price21k: Number(goldPrices["21k"]),
     price20k: Number(goldPrices["20k"]),
     price18k: Number(goldPrices["18k"]),
     price14k: Number(goldPrices["14k"]),
@@ -100,6 +102,7 @@ await prisma.goldPriceHistory.create({
   data: {
     price24k: prices.price24k * historyRate,
     price22k: prices.price22k * historyRate,
+    price21k: prices.price21k * historyRate,
     price20k: prices.price20k * historyRate,
     price18k: prices.price18k * historyRate,
     price14k: prices.price14k * historyRate,
@@ -133,6 +136,7 @@ export async function getLatestGoldPrices() {
   return {
     "24k": savedPrices.price24k,
     "22k": savedPrices.price22k,
+    "21k": savedPrices.price21k,
     "20k": savedPrices.price20k,
     "18k": savedPrices.price18k,
     "14k": savedPrices.price14k,
