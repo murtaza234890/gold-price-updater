@@ -34,6 +34,7 @@ model GoldPrice {
   id        Int      @id @default(1)
   price24k  Float
   price22k  Float
+  price21k  Float
   price20k  Float
   price18k  Float
   price14k  Float
@@ -44,6 +45,7 @@ model GoldPriceHistory {
   price24k  Float
   price22k  Float
   price20k  Float
+  price21k  Float
   price18k  Float
   price14k  Float
   currency  String   @default("AED")
