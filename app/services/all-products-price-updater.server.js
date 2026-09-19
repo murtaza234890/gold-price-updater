@@ -4,28 +4,7 @@ import {
 } from "./gold.server";
 
 import { updateProductVariantPrices } from "./product-price-updater.server";
-
-const USD_TO_AED = 3.6725;
-
-const CURRENCY_RATES = {
-  USD: 1,
-  AED: USD_TO_AED,
-  GBP: 0.79,
-  EUR: 0.86,
-  SAR: 3.75,
-  QAR: 3.64,
-  KWD: 0.307,
-  BHD: 0.376,
-  OMR: 0.385,
-  PKR: 280,
-  INR: 87,
-  CAD: 1.38,
-  AUD: 1.53,
-  NZD: 1.68,
-  SGD: 1.29,
-  JPY: 147,
-  CNY: 7.18,
-};
+import { convertGoldPricesToCurrency } from "./pricing.js";
 
 const SHOP_CURRENCY_QUERY = `#graphql
   query GetShopCurrency {
@@ -96,6 +75,22 @@ const PRODUCTS_QUERY = `#graphql
             id
             title
             price
+            selectedOptions {
+              name
+              value
+            }
+            goldWeight: metafield(
+              namespace: "custom"
+              key: "gold_weight"
+            ) {
+              value
+            }
+            goldPurity: metafield(
+              namespace: "custom"
+              key: "gold_purity"
+            ) {
+              value
+            }
           }
         }
       }
@@ -107,25 +102,6 @@ const PRODUCTS_QUERY = `#graphql
     }
   }
 `;
-
-function convertGoldPricesToCurrency(goldPrices, currency) {
-  const rate = CURRENCY_RATES[currency];
-
-  if (!rate) {
-    throw new Error(
-      `Unsupported Shopify store currency: ${currency}`,
-    );
-  }
-
-  return Object.fromEntries(
-    Object.entries(goldPrices).map(
-      ([karat, price]) => [
-        karat,
-        Number(price) * rate,
-      ],
-    ),
-  );
-}
 
 export async function updateAllProductPrices({ admin }) {
   /*
@@ -306,13 +282,19 @@ export async function updateAllProductPrices({ admin }) {
       );
 
       /*
-       * Product requires gold weight and purity.
+       * Product requires gold weight and purity either at
+       * variant level or product level.
        */
 
-      if (
-        !product.goldWeight?.value ||
-        !product.goldPurity?.value
-      ) {
+      const variantsNodes = product.variants?.nodes || [];
+      const hasVariantGoldData = variantsNodes.some(
+        (v) => v.goldWeight?.value && v.goldPurity?.value,
+      );
+      const hasProductGoldData = Boolean(
+        product.goldWeight?.value && product.goldPurity?.value,
+      );
+
+      if (!hasVariantGoldData && !hasProductGoldData) {
         skippedProducts++;
 
         results.push({
@@ -336,13 +318,14 @@ export async function updateAllProductPrices({ admin }) {
 
         const productForCalculation = {
           id: product.id,
+          title: product.title,
 
-          goldWeight: Number(
-            product.goldWeight.value,
-          ),
+          goldWeight: product.goldWeight?.value
+            ? Number(product.goldWeight.value)
+            : null,
 
           goldKarat:
-            product.goldPurity.value,
+            product.goldPurity?.value || null,
 
           craftsmanship: Number(
             product.craftsmanship?.value || 0,
@@ -364,8 +347,7 @@ export async function updateAllProductPrices({ admin }) {
             product.premiumPackaging?.value ===
             "true",
 
-          variants:
-            product.variants?.nodes || [],
+          variants: variantsNodes,
         };
 
         console.log(

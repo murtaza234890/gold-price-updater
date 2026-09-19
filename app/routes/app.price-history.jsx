@@ -139,6 +139,24 @@ export default function PriceHistory() {
                     </s-paragraph>
 
                     <s-paragraph>
+                      <strong>21K</strong>{" "}
+                      {previous
+                        ? `AED ${Number(
+                            previous.price21k,
+                          ).toFixed(2)} → AED ${Number(
+                            record.price21k,
+                          ).toFixed(2)}`
+                        : `AED ${Number(
+                            record.price21k,
+                          ).toFixed(2)}`}
+                      {previous &&
+                        ` ${renderPriceChange(
+                          record.price21k,
+                          previous.price21k,
+                        )}`}
+                    </s-paragraph>
+
+                    <s-paragraph>
                       <strong>20K</strong>{" "}
                       {previous
                         ? `AED ${Number(

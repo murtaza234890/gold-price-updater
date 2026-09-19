@@ -1,5 +1,6 @@
 import { authenticate } from "../shopify.server";
 import { getGoldPrices } from "../services/gold.server";
+import { convertGoldPricesToCurrency } from "../services/pricing.js";
 import { updateProductVariantPrices } from "../services/product-price-updater.server";
 
 export async function action({ request }) {
@@ -80,8 +81,27 @@ export async function action({ request }) {
                 id
                 title
                 price
+                selectedOptions {
+                  name
+                  value
+                }
+                goldWeight: metafield(
+                  namespace: "custom"
+                  key: "gold_weight"
+                ) {
+                  value
+                }
+                goldPurity: metafield(
+                  namespace: "custom"
+                  key: "gold_purity"
+                ) {
+                  value
+                }
               }
             }
+          }
+          shop {
+            currencyCode
           }
         }
       `,
@@ -112,22 +132,33 @@ export async function action({ request }) {
       );
     }
 
-    if (!product.goldWeight?.value) {
-      throw new Error("custom.gold_weight metafield is missing");
+    const variantsNodes = product.variants?.nodes || [];
+    const hasVariantGoldData = variantsNodes.some(
+      (v) => v.goldWeight?.value && v.goldPurity?.value,
+    );
+    const hasProductGoldData = Boolean(
+      product.goldWeight?.value && product.goldPurity?.value,
+    );
+
+    if (!hasVariantGoldData && !hasProductGoldData) {
+      throw new Error(
+        "Missing gold_weight or gold_purity (neither variant-level nor product-level data found)",
+      );
     }
 
-    if (!product.goldPurity?.value) {
-      throw new Error("custom.gold_purity metafield is missing");
-    }
-
-    const goldPrices = await getGoldPrices();
+    const storeCurrency = result.data?.shop?.currencyCode || "AED";
+    const goldPricesUSD = await getGoldPrices();
+    const goldPrices = convertGoldPricesToCurrency(goldPricesUSD, storeCurrency);
 
     const productForCalculation = {
       id: product.id,
+      title: product.title,
 
-      goldWeight: Number(product.goldWeight.value),
+      goldWeight: product.goldWeight?.value
+        ? Number(product.goldWeight.value)
+        : null,
 
-      goldKarat: product.goldPurity.value,
+      goldKarat: product.goldPurity?.value || null,
 
       craftsmanship: Number(
         product.craftsmanship?.value || 0,
@@ -147,7 +178,7 @@ export async function action({ request }) {
       premiumPackaging:
         product.premiumPackaging?.value === "true",
 
-      variants: product.variants.nodes,
+      variants: variantsNodes,
     };
 
     console.log(
@@ -157,7 +188,7 @@ export async function action({ request }) {
 
     console.log(
       "SHOPIFY VARIANTS:",
-      JSON.stringify(product.variants.nodes, null, 2),
+      JSON.stringify(variantsNodes, null, 2),
     );
 
     const updateResult = await updateProductVariantPrices({
@@ -169,6 +200,7 @@ export async function action({ request }) {
     return Response.json({
       success: true,
       product: product.title,
+      currency: storeCurrency,
       goldPrices,
       ...updateResult,
     });

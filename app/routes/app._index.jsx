@@ -103,6 +103,12 @@ export default function Index() {
               </s-paragraph>
             </s-section>
 
+            <s-section heading="21K">
+              <s-paragraph>
+                {formatGoldPrice(goldPrices["21k"])}
+              </s-paragraph>
+            </s-section>
+
             <s-section heading="20K">
               <s-paragraph>
                 {formatGoldPrice(goldPrices["20k"])}
