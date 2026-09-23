@@ -26,11 +26,27 @@
   <script type="application/json" data-variant-gold-map>
     [
       {% for variant in product.variants %}
+        {% assign var_craftsmanship = variant.metafields.custom.craftsmanship.value | default: craftsmanship %}
+        {% assign var_engraving_fee = variant.metafields.custom.personal_engraving_fee.value | default: engraving_fee %}
+        {% assign var_packaging_fee = variant.metafields.custom.premium_packaging_fee.value | default: packaging_fee %}
+        {% assign var_engraving_enabled = variant.metafields.custom.personal_engraving.value %}
+        {% if var_engraving_enabled == nil %}
+          {% assign var_engraving_enabled = engraving_enabled %}
+        {% endif %}
+        {% assign var_packaging_enabled = variant.metafields.custom.premium_packaging.value %}
+        {% if var_packaging_enabled == nil %}
+          {% assign var_packaging_enabled = packaging_enabled %}
+        {% endif %}
         {
           "id": {{ variant.id | json }},
           "title": {{ variant.title | json }},
           "weight": {{ variant.metafields.custom.gold_weight.value | default: gold_weight | json }},
-          "karat": {{ variant.metafields.custom.gold_purity.value | default: gold_purity | remove: 'K' | remove: 'k' | json }}
+          "karat": {{ variant.metafields.custom.gold_purity.value | default: gold_purity | remove: 'K' | remove: 'k' | json }},
+          "craftsmanship": {{ var_craftsmanship | json }},
+          "engravingFee": {{ var_engraving_fee | json }},
+          "packagingFee": {{ var_packaging_fee | json }},
+          "engravingEnabled": {% if var_engraving_enabled %}true{% else %}false{% endif %},
+          "packagingEnabled": {% if var_packaging_enabled %}true{% else %}false{% endif %}
         }{% unless forloop.last %},{% endunless %}
       {% endfor %}
     ]
@@ -983,9 +999,23 @@
         }
       }
 
-      function renderForVariant(selectedWeight, selectedKarat) {
-        const activeWeight = Number(selectedWeight) || 0;
-        const activeKarat = Number(selectedKarat) || 22;
+      function renderForVariant(variantData) {
+        const activeWeight = Number(variantData?.weight ?? weight) || 0;
+        const activeKarat = Number(variantData?.karat ?? karat) || 22;
+        const activeCraftsmanship =
+          Number(variantData?.craftsmanship ?? craftsmanshipPercent) || 0;
+        const activeEngravingFee =
+          Number(variantData?.engravingFee ?? engravingPercent) || 0;
+        const activePackagingFee =
+          Number(variantData?.packagingFee ?? packagingPercent) || 0;
+        const activeEngravingEnabled =
+          variantData?.engravingEnabled !== undefined
+            ? Boolean(variantData.engravingEnabled)
+            : engravingEnabled;
+        const activePackagingEnabled =
+          variantData?.packagingEnabled !== undefined
+            ? Boolean(variantData.packagingEnabled)
+            : packagingEnabled;
 
         if (weightDisplayEl) {
           const formattedWeight = Number.isInteger(activeWeight)
@@ -1013,14 +1043,14 @@
           pricePerGram * activeWeight;
 
         let totalFeePercent = 0;
-        if (craftsmanshipPercent > 0) {
-          totalFeePercent += craftsmanshipPercent;
+        if (activeCraftsmanship > 0) {
+          totalFeePercent += activeCraftsmanship;
         }
-        if (engravingEnabled && engravingPercent > 0) {
-          totalFeePercent += engravingPercent;
+        if (activeEngravingEnabled && activeEngravingFee > 0) {
+          totalFeePercent += activeEngravingFee;
         }
-        if (packagingEnabled && packagingPercent > 0) {
-          totalFeePercent += packagingPercent;
+        if (activePackagingEnabled && activePackagingFee > 0) {
+          totalFeePercent += activePackagingFee;
         }
 
         const goldPortionPercent =
@@ -1034,16 +1064,16 @@
           goldValue / (goldPortionPercent / 100);
 
         const craftsmanshipValue =
-          finalProductPrice * (craftsmanshipPercent / 100);
+          finalProductPrice * (activeCraftsmanship / 100);
 
         const engravingValue =
-          engravingEnabled
-            ? finalProductPrice * (engravingPercent / 100)
+          activeEngravingEnabled
+            ? finalProductPrice * (activeEngravingFee / 100)
             : 0;
 
         const packagingValue =
-          packagingEnabled
-            ? finalProductPrice * (packagingPercent / 100)
+          activePackagingEnabled
+            ? finalProductPrice * (activePackagingFee / 100)
             : 0;
 
         const atelierFee =
@@ -1068,8 +1098,17 @@
         }
       }
 
-      // Initial render using active widget attributes
-      renderForVariant(weight, karat);
+      // Initial render using active widget attributes / first variant
+      const initialVariant = variantMap.length ? variantMap[0] : {
+        weight: weight,
+        karat: karat,
+        craftsmanship: craftsmanshipPercent,
+        engravingFee: engravingPercent,
+        packagingFee: packagingPercent,
+        engravingEnabled: engravingEnabled,
+        packagingEnabled: packagingEnabled
+      };
+      renderForVariant(initialVariant);
 
       // Handle variant change events
       function onVariantChange(variantId) {
@@ -1078,7 +1117,7 @@
           return String(v.id) === String(variantId);
         });
         if (found) {
-          renderForVariant(found.weight, found.karat);
+          renderForVariant(found);
         }
       }
 

@@ -150,6 +150,11 @@ export function calculateProductPrice(product, goldPrices) {
 export function calculatePhysicalVariantPrice({
   goldWeight,
   goldPurity,
+  craftsmanship,
+  personalEngravingFee,
+  premiumPackagingFee,
+  personalEngraving,
+  premiumPackaging,
   productMetafields = {},
   goldPrices,
 }) {
@@ -157,11 +162,26 @@ export function calculatePhysicalVariantPrice({
     {
       goldWeight,
       goldKarat: goldPurity,
-      craftsmanship: productMetafields.craftsmanship,
-      personalEngravingFee: productMetafields.personalEngravingFee,
-      premiumPackagingFee: productMetafields.premiumPackagingFee,
-      personalEngraving: productMetafields.personalEngraving,
-      premiumPackaging: productMetafields.premiumPackaging,
+      craftsmanship:
+        craftsmanship !== undefined && craftsmanship !== null
+          ? craftsmanship
+          : productMetafields.craftsmanship,
+      personalEngravingFee:
+        personalEngravingFee !== undefined && personalEngravingFee !== null
+          ? personalEngravingFee
+          : productMetafields.personalEngravingFee,
+      premiumPackagingFee:
+        premiumPackagingFee !== undefined && premiumPackagingFee !== null
+          ? premiumPackagingFee
+          : productMetafields.premiumPackagingFee,
+      personalEngraving:
+        personalEngraving !== undefined && personalEngraving !== null
+          ? personalEngraving
+          : productMetafields.personalEngraving,
+      premiumPackaging:
+        premiumPackaging !== undefined && premiumPackaging !== null
+          ? premiumPackaging
+          : productMetafields.premiumPackaging,
     },
     goldPrices,
   );

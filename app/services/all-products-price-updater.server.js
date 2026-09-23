@@ -91,6 +91,36 @@ const PRODUCTS_QUERY = `#graphql
             ) {
               value
             }
+            craftsmanship: metafield(
+              namespace: "custom"
+              key: "craftsmanship"
+            ) {
+              value
+            }
+            personalEngravingFee: metafield(
+              namespace: "custom"
+              key: "personal_engraving_fee"
+            ) {
+              value
+            }
+            premiumPackagingFee: metafield(
+              namespace: "custom"
+              key: "premium_packaging_fee"
+            ) {
+              value
+            }
+            personalEngraving: metafield(
+              namespace: "custom"
+              key: "personal_engraving"
+            ) {
+              value
+            }
+            premiumPackaging: metafield(
+              namespace: "custom"
+              key: "premium_packaging"
+            ) {
+              value
+            }
           }
         }
       }

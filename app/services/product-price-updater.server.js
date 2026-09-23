@@ -35,6 +35,11 @@ export async function updateProductVariantPrices({
       isPaymentRecognized: parsed.isPaymentRecognized,
       goldWeight: variant.goldWeight,
       goldPurity: variant.goldPurity,
+      craftsmanship: variant.craftsmanship,
+      personalEngravingFee: variant.personalEngravingFee,
+      premiumPackagingFee: variant.premiumPackagingFee,
+      personalEngraving: variant.personalEngraving,
+      premiumPackaging: variant.premiumPackaging,
     });
   }
 
@@ -44,9 +49,14 @@ export async function updateProductVariantPrices({
   let primaryCalculation = null;
 
   for (const [key, groupVariants] of physicalGroups.entries()) {
-    // Determine gold weight and purity for this physical variant
+    // Determine gold weight, purity, and fee metafields for this physical variant
     let weight = null;
     let purity = null;
+    let craftsmanship = null;
+    let personalEngravingFee = null;
+    let premiumPackagingFee = null;
+    let personalEngraving = null;
+    let premiumPackaging = null;
 
     // Check variant-level metafields across the group
     for (const v of groupVariants) {
@@ -57,6 +67,53 @@ export async function updateProductVariantPrices({
       const rawPurity = v.goldPurity?.value ?? v.goldPurity;
       if (rawPurity && purity === null) {
         purity = rawPurity;
+      }
+      const rawCraftsmanship = v.craftsmanship?.value ?? v.craftsmanship;
+      if (
+        rawCraftsmanship !== undefined &&
+        rawCraftsmanship !== null &&
+        rawCraftsmanship !== "" &&
+        craftsmanship === null
+      ) {
+        craftsmanship = rawCraftsmanship;
+      }
+      const rawEngravingFee =
+        v.personalEngravingFee?.value ?? v.personalEngravingFee;
+      if (
+        rawEngravingFee !== undefined &&
+        rawEngravingFee !== null &&
+        rawEngravingFee !== "" &&
+        personalEngravingFee === null
+      ) {
+        personalEngravingFee = rawEngravingFee;
+      }
+      const rawPackagingFee =
+        v.premiumPackagingFee?.value ?? v.premiumPackagingFee;
+      if (
+        rawPackagingFee !== undefined &&
+        rawPackagingFee !== null &&
+        rawPackagingFee !== "" &&
+        premiumPackagingFee === null
+      ) {
+        premiumPackagingFee = rawPackagingFee;
+      }
+      const rawEngraving = v.personalEngraving?.value ?? v.personalEngraving;
+      if (
+        rawEngraving !== undefined &&
+        rawEngraving !== null &&
+        rawEngraving !== "" &&
+        personalEngraving === null
+      ) {
+        personalEngraving = rawEngraving;
+      }
+      const rawPackaging = v.premiumPackaging?.value ?? v.premiumPackaging;
+      if (
+        rawPackaging !== undefined &&
+        rawPackaging !== null &&
+        rawPackaging !== "" &&
+        premiumPackaging === null
+      ) {
+        premiumPackaging = rawPackaging;
       }
     }
 
@@ -73,6 +130,25 @@ export async function updateProductVariantPrices({
       if (prodPurity) {
         purity = prodPurity;
       }
+    }
+    if (craftsmanship === null) {
+      craftsmanship = product.craftsmanship?.value ?? product.craftsmanship;
+    }
+    if (personalEngravingFee === null) {
+      personalEngravingFee =
+        product.personalEngravingFee?.value ?? product.personalEngravingFee;
+    }
+    if (premiumPackagingFee === null) {
+      premiumPackagingFee =
+        product.premiumPackagingFee?.value ?? product.premiumPackagingFee;
+    }
+    if (personalEngraving === null) {
+      personalEngraving =
+        product.personalEngraving?.value ?? product.personalEngraving;
+    }
+    if (premiumPackaging === null) {
+      premiumPackaging =
+        product.premiumPackaging?.value ?? product.premiumPackaging;
     }
 
     if (weight === null || purity === null) {
@@ -92,6 +168,11 @@ export async function updateProductVariantPrices({
     const calculation = calculatePhysicalVariantPrice({
       goldWeight: weight,
       goldPurity: purity,
+      craftsmanship,
+      personalEngravingFee,
+      premiumPackagingFee,
+      personalEngraving,
+      premiumPackaging,
       productMetafields: product,
       goldPrices,
     });
@@ -99,6 +180,9 @@ export async function updateProductVariantPrices({
     physicalVariantCalculations[key] = {
       weight,
       purity,
+      craftsmanship,
+      personalEngravingFee,
+      premiumPackagingFee,
       calculation,
     };
 
