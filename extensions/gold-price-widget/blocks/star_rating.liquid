@@ -9,7 +9,6 @@
 
 {% assign shop_currency = localization.country.currency.iso_code | default: shop.currency %}
 
-
 <div
   class="gold-price-widget"
   data-gold-widget
@@ -29,14 +28,17 @@
         {% assign var_craftsmanship = variant.metafields.custom.craftsmanship.value | default: craftsmanship %}
         {% assign var_engraving_fee = variant.metafields.custom.personal_engraving_fee.value | default: engraving_fee %}
         {% assign var_packaging_fee = variant.metafields.custom.premium_packaging_fee.value | default: packaging_fee %}
+
         {% assign var_engraving_enabled = variant.metafields.custom.personal_engraving.value %}
         {% if var_engraving_enabled == nil %}
           {% assign var_engraving_enabled = engraving_enabled %}
         {% endif %}
+
         {% assign var_packaging_enabled = variant.metafields.custom.premium_packaging.value %}
         {% if var_packaging_enabled == nil %}
           {% assign var_packaging_enabled = packaging_enabled %}
         {% endif %}
+
         {
           "id": {{ variant.id | json }},
           "title": {{ variant.title | json }},
@@ -52,222 +54,80 @@
     ]
   </script>
 
-  <!-- =====================================================
-       GOLD DETAILS
-  ====================================================== -->
 
-  <div class="marami-card marami-gold-card">
+  <!-- GOLD DETAILS -->
 
-    <div class="marami-card-header">
+  <div class="marami-gold-details">
 
+    <div class="marami-header">
       <div class="marami-heading">
         GOLD DETAILS
       </div>
 
       <div class="marami-latest-price">
-
-        <span class="marami-gold-dot"></span>
-
-        <span class="marami-header-label">Latest gold price</span>
-
-        <span
-          class="marami-info-icon"
-          title="Latest saved gold price"
-          aria-label="Latest saved gold price"
-        >
-          <svg viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9"></circle>
-            <path d="M12 10.5V16"></path>
-            <circle
-              cx="12"
-              cy="7.5"
-              r=".6"
-              fill="currentColor"
-              stroke="none"
-            ></circle>
-          </svg>
-        </span>
-
+        Latest gold price
       </div>
-
     </div>
 
 
     <!-- GOLD PRICE -->
 
-    <div class="marami-detail-row">
-
-      <div class="marami-detail-left">
-
-        <div class="marami-icon">
-
-          <svg viewBox="0 0 48 48">
-
-            <path d="M12 20h24l5 7H7l5-7Z"></path>
-
-            <path d="M12 20l4-10h16l4 10"></path>
-
-            <path d="M16 10v10"></path>
-
-            <path d="M32 10v10"></path>
-
-          </svg>
-
-        </div>
-
-        <span>Gold Price / g</span>
-
-      </div>
-
+    <div class="marami-row">
+      <span>Gold Price / g</span>
       <strong data-gold-price>—</strong>
-
     </div>
 
 
     <!-- GOLD WEIGHT -->
 
-    <div class="marami-detail-row">
-
-      <div class="marami-detail-left">
-
-        <div class="marami-icon">
-
-          <svg viewBox="0 0 48 48">
-
-            <path d="M18 13h12"></path>
-
-            <path d="M22 13v-4h4v4"></path>
-
-            <path d="M14 18h20l5 22H9l5-22Z"></path>
-
-            <path d="M18 18c0 4 3 6 6 6s6-2 6-6"></path>
-
-          </svg>
-
-        </div>
-
-        <div class="marami-detail-text">
-          <span class="marami-detail-label">Gold Weight</span>
-          <span class="marami-subheading">(approximately)</span>
-        </div>
-
+    <div class="marami-row">
+      <div class="marami-row-label">
+        <span>Gold Weight</span>
+        <small>(approximately)</small>
       </div>
 
-      <strong data-weight-display>{% if gold_weight != blank %}{{ gold_weight | times: 1.0 | round: 1 }} g{% else %}0.0 g{% endif %}</strong>
-
+      <strong data-weight-display>
+        {% if gold_weight != blank %}
+          {{ gold_weight | times: 1.0 | round: 1 }} g
+        {% else %}
+          0.0 g
+        {% endif %}
+      </strong>
     </div>
 
 
     <!-- GOLD PURITY -->
 
-    <div class="marami-detail-row">
-
-      <div class="marami-detail-left">
-
-        <div class="marami-icon">
-
-          <svg viewBox="0 0 48 48">
-
-            <path d="M24 7 39 20 24 41 9 20 24 7Z"></path>
-
-            <path d="M9 20h30"></path>
-
-            <path d="m18 20 6 21 6-21"></path>
-
-            <path d="m15 14 9 6 9-6"></path>
-
-          </svg>
-
-        </div>
-
-        <span>Gold Purity</span>
-
-      </div>
-
-      <strong data-purity-display>{{ gold_purity | downcase }}</strong>
-
+    <div class="marami-row">
+      <span>Gold Purity</span>
+      <strong data-purity-display>
+        {{ gold_purity | downcase }}
+      </strong>
     </div>
 
 
     <!-- GOLD VALUE -->
 
-    <div class="marami-detail-row">
-
-      <div class="marami-detail-left">
-
-        <div class="marami-icon">
-
-          <svg viewBox="0 0 48 48">
-
-            <rect x="11" y="6" width="26" height="36" rx="2"></rect>
-
-            <path d="M16 13h16"></path>
-
-            <circle cx="17" cy="21" r="1"></circle>
-            <circle cx="24" cy="21" r="1"></circle>
-            <circle cx="31" cy="21" r="1"></circle>
-
-            <circle cx="17" cy="28" r="1"></circle>
-            <circle cx="24" cy="28" r="1"></circle>
-            <circle cx="31" cy="28" r="1"></circle>
-
-            <circle cx="17" cy="35" r="1"></circle>
-            <circle cx="24" cy="35" r="1"></circle>
-            <circle cx="31" cy="35" r="1"></circle>
-
-          </svg>
-
-        </div>
-
-        <span>Gold Value</span>
-
-      </div>
-
+    <div class="marami-row">
+      <span>Gold Value</span>
       <strong data-gold-value>—</strong>
-
     </div>
 
   </div>
 
 
-  <!-- =====================================================
-       MARAMI ATELIER FEE
-  ====================================================== -->
+  <!-- ATELIER FEE -->
 
-  <div class="marami-atelier-card">
+  <div class="marami-atelier">
 
-    <div class="marami-atelier-left">
+    <div class="marami-atelier-content">
 
-      <div class="marami-atelier-icon">
-
-        <svg viewBox="0 0 48 48">
-
-          <path d="M9 34 34 9"></path>
-
-          <path d="M27 8 40 21"></path>
-
-          <path d="M10 39 5 34l10-10 5 5L10 39Z"></path>
-
-          <path d="m31 26 7 7"></path>
-
-          <path d="m35 22 6 6"></path>
-
-          <path d="M14 19 8 13l5-5 6 6"></path>
-
-        </svg>
-
+      <div class="marami-atelier-title">
+        MARAMI ATELIER FEE
       </div>
 
-      <div class="marami-atelier-content">
-
-        <div class="marami-section-title">
-          MARAMI ATELIER FEE
-        </div>
-
-        <div class="marami-atelier-description">
-          Includes design development, craftsmanship, manufacturing, quality finishing and signature packaging.
-        </div>
-
+      <div class="marami-atelier-description">
+        Includes design development, craftsmanship, manufacturing, quality finishing and signature packaging.
       </div>
 
     </div>
@@ -282,15 +142,13 @@
   </div>
 
 
-  <!-- =====================================================
-       TOTAL PRICE
-  ====================================================== -->
+  <!-- TOTAL PRICE -->
 
-  <div class="marami-total-card">
+  <div class="marami-total">
 
-    <div class="marami-total-label">
+    <span class="marami-total-label">
       TOTAL PRICE
-    </div>
+    </span>
 
     <strong
       class="marami-total-price"
@@ -302,39 +160,25 @@
   </div>
 
 
-  <!-- =====================================================
-       FOOTER
-  ====================================================== -->
+  <!-- FOOTER -->
 
-  <div class="marami-widget-footer">
-
-    <span class="marami-footer-dot"></span>
-
+  <div class="marami-footer">
     <span data-footer-status>
       Latest saved gold price
     </span>
-
   </div>
 
 </div>
 
 
-
 <style>
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap');
-
-/* =========================================================
-   MAIN WIDGET CONTAINER
-========================================================= */
 
 .gold-price-widget {
   width: 100%;
   max-width: 560px;
-  margin: 20px 0;
-  box-sizing: border-box;
-  color: #241e19;
-  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  margin: 24px 0;
+  color: #24201c;
+  font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -345,443 +189,303 @@
 }
 
 
-/* =========================================================
-   CARD 1: GOLD DETAILS CARD
-========================================================= */
+/* =========================================
+   GOLD DETAILS
+========================================= */
 
-.marami-card {
+.marami-gold-details {
   width: 100%;
-  box-sizing: border-box;
-  background: #fcf9f5;
-  border: 1px solid #efe7dc;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(60, 45, 25, 0.03);
 }
 
-.marami-gold-card {
-  padding: 22px 24px 16px;
-}
-
-
-/* HEADER */
-
-.marami-card-header {
+.marami-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f0e8dc;
+  gap: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d9d9d9;
 }
 
 .marami-heading {
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.2;
-  letter-spacing: 0.18em;
-  font-weight: 500;
-  color: #241e19;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #252525;
 }
 
 .marami-latest-price {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
-  color: #8c8072;
+  font-size: 11px;
+  color: #777;
   white-space: nowrap;
 }
 
-.marami-gold-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #a98d62;
-  flex-shrink: 0;
-}
 
-.marami-info-icon {
-  width: 16px;
-  height: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #9d8e7c;
-  flex-shrink: 0;
-}
+/* =========================================
+   DETAIL ROWS
+========================================= */
 
-.marami-info-icon svg {
-  width: 14px;
-  height: 14px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-}
-
-
-/* ROWS */
-
-.marami-detail-row {
+.marami-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 15px 0;
-  border-bottom: 1px solid #f0e8dc;
+  gap: 20px;
+  min-height: 62px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e1e1e1;
 }
 
-.marami-detail-row:last-child {
-  border-bottom: none;
-  padding-bottom: 4px;
-}
-
-.marami-detail-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
-
-.marami-icon {
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: #b59b72;
-}
-
-.marami-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.35;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.marami-detail-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.marami-detail-left > span,
-.marami-detail-label {
-  font-size: 15px;
-  color: #4a4239;
-  font-weight: 400;
-  white-space: nowrap;
-}
-
-.marami-subheading {
-  font-size: 11.5px;
-  color: #8c8072;
-  font-weight: 400;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-.marami-detail-row strong {
-  font-size: 16px;
+.marami-row > span,
+.marami-row-label > span {
+  font-size: 14px;
+  line-height: 1.3;
+  color: #333;
   font-weight: 500;
-  color: #241e19;
+}
+
+.marami-row strong {
+  font-size: 15px;
+  line-height: 1.3;
+  color: #222;
+  font-weight: 600;
   text-align: right;
   white-space: nowrap;
-  letter-spacing: 0.02em;
+}
+
+.marami-row-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.marami-row-label small {
+  font-size: 10px;
+  line-height: 1.2;
+  color: #888;
 }
 
 
-/* =========================================================
-   CARD 2: MARAMI ATELIER FEE
-========================================================= */
+/* =========================================
+   ATELIER FEE
+========================================= */
 
-.marami-atelier-card {
+.marami-atelier {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 12px;
-  padding: 20px 24px;
-  background: #f4ece2;
-  border: 1px solid #ebe2d6;
-  border-radius: 14px;
-  box-shadow: 0 2px 10px rgba(60, 45, 25, 0.03);
-}
-
-.marami-atelier-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  min-width: 0;
-  flex: 1;
-}
-
-.marami-atelier-icon {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: #b0956c;
-}
-
-.marami-atelier-icon svg {
-  width: 30px;
-  height: 30px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.35;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid #bcbcbc;
 }
 
 .marami-atelier-content {
   min-width: 0;
+  flex: 1;
 }
 
-.marami-section-title {
-  font-size: 15.5px;
-  letter-spacing: 0.16em;
-  font-weight: 500;
-  color: #241e19;
-  line-height: 1.25;
+.marami-atelier-title {
   margin-bottom: 5px;
-  text-transform: uppercase;
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #222;
 }
 
 .marami-atelier-description {
-  font-size: 11px;
+  max-width: 350px;
+  font-size: 10px;
   line-height: 1.45;
-  color: #72685d;
-  max-width: 320px;
+  color: #777;
 }
 
 .marami-atelier-price {
   flex-shrink: 0;
-  font-size: 17px;
-  font-weight: 500;
-  color: #241e19;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 600;
+  color: #222;
   white-space: nowrap;
   text-align: right;
-  letter-spacing: 0.02em;
 }
 
 
-/* =========================================================
-   CARD 3: TOTAL PRICE
-========================================================= */
+/* =========================================
+   TOTAL PRICE
+========================================= */
 
-.marami-total-card {
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 12px;
-  padding: 22px 24px;
+.marami-total {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  background: #e8dbcb;
-  border: 1px solid #dfd1bf;
-  border-radius: 14px;
-  box-shadow: 0 2px 10px rgba(60, 45, 25, 0.03);
+  gap: 20px;
+  padding: 18px 0 16px;
 }
 
 .marami-total-label {
-  font-size: 16.5px;
+  font-size: 16px;
   line-height: 1.2;
-  letter-spacing: 0.16em;
-  font-weight: 500;
-  color: #241e19;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #222;
   white-space: nowrap;
-  text-transform: uppercase;
 }
 
 .marami-total-price {
-  font-size: 27px;
-  line-height: 1;
+  font-size: 25px;
+  line-height: 1.1;
   font-weight: 500;
-  color: #241e19;
+  color: #222;
   white-space: nowrap;
   text-align: right;
-  letter-spacing: 0.02em;
 }
 
 
-/* =========================================================
+/* =========================================
    FOOTER
-========================================================= */
+========================================= */
 
-.marami-widget-footer {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 11px;
-  padding-left: 4px;
-  font-size: 10.5px;
-  color: #8c8276;
-}
-
-.marami-footer-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #5b8a5e;
-  flex-shrink: 0;
+.marami-footer {
+  padding-top: 8px;
+  font-size: 9.5px;
+  line-height: 1.3;
+  color: #888;
 }
 
 
-/* =========================================================
-   RESPONSIVE BREAKPOINTS
-========================================================= */
+/* =========================================
+   MOBILE
+========================================= */
 
-/* TABLET & SMALL DESKTOP (<= 640px) */
 @media screen and (max-width: 640px) {
+
   .gold-price-widget {
-    margin: 15px 0;
-  }
-
-  .marami-gold-card {
-    padding: 18px 18px 14px;
-  }
-
-  .marami-atelier-card {
-    padding: 16px 18px;
-    gap: 12px;
-  }
-
-  .marami-atelier-left {
-    gap: 12px;
-  }
-
-  .marami-total-card {
-    padding: 18px 18px;
+    margin: 18px 0;
   }
 
   .marami-heading {
-    font-size: 15px;
-    letter-spacing: 0.14em;
+    font-size: 14px;
   }
 
-  .marami-section-title {
+  .marami-latest-price {
+    font-size: 10px;
+  }
+
+  .marami-row {
+    min-height: 58px;
+    padding: 13px 0;
+  }
+
+  .marami-row > span,
+  .marami-row-label > span {
+    font-size: 13px;
+  }
+
+  .marami-row strong {
     font-size: 14px;
-    letter-spacing: 0.13em;
+  }
+
+  .marami-atelier {
+    padding: 17px 0;
+  }
+
+  .marami-atelier-title {
+    font-size: 13px;
+  }
+
+  .marami-atelier-description {
+    font-size: 9.5px;
+  }
+
+  .marami-atelier-price {
+    font-size: 14px;
+  }
+
+  .marami-total {
+    padding: 17px 0 14px;
   }
 
   .marami-total-label {
     font-size: 14px;
-    letter-spacing: 0.13em;
   }
 
   .marami-total-price {
-    font-size: 22px;
-  }
-
-  .marami-atelier-price {
-    font-size: 15px;
-  }
-
-  .marami-detail-row strong {
-    font-size: 14.5px;
-  }
-
-  .marami-detail-left > span,
-  .marami-detail-label {
-    font-size: 13.5px;
-  }
-
-  .marami-subheading {
-    font-size: 10.5px;
+    font-size: 21px;
   }
 }
 
 
-/* MOBILE (<= 440px) */
 @media screen and (max-width: 440px) {
-  .marami-gold-card {
-    padding: 15px 14px 12px;
-  }
 
-  .marami-card-header {
-    padding-bottom: 12px;
-  }
-
-  .marami-atelier-card {
-    padding: 14px 14px;
-  }
-
-  .marami-total-card {
-    padding: 16px 14px;
-  }
-
-  .marami-latest-price .marami-header-label {
-    display: none;
+  .marami-header {
+    padding-bottom: 11px;
   }
 
   .marami-heading {
-    font-size: 13.5px;
-    letter-spacing: 0.11em;
+    font-size: 13px;
+    letter-spacing: 0.09em;
   }
 
-  .marami-section-title {
+  .marami-latest-price {
+    font-size: 9px;
+  }
+
+  .marami-row {
+    min-height: 54px;
+    padding: 11px 0;
+  }
+
+  .marami-row > span,
+  .marami-row-label > span {
+    font-size: 12px;
+  }
+
+  .marami-row strong {
     font-size: 13px;
-    letter-spacing: 0.11em;
+  }
+
+  .marami-row-label small {
+    font-size: 9px;
+  }
+
+  .marami-atelier {
+    gap: 12px;
+  }
+
+  .marami-atelier-title {
+    font-size: 11.5px;
+    letter-spacing: 0.07em;
   }
 
   .marami-atelier-description {
-    font-size: 10px;
-    line-height: 1.35;
+    font-size: 8.5px;
+    line-height: 1.4;
+  }
+
+  .marami-atelier-price {
+    font-size: 12.5px;
   }
 
   .marami-total-label {
     font-size: 12px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.07em;
   }
 
   .marami-total-price {
-    font-size: 19px;
+    font-size: 18px;
   }
 
-  .marami-atelier-price {
-    font-size: 13.5px;
-  }
-
-  .marami-detail-row {
-    padding: 12px 0;
-  }
-
-  .marami-detail-left {
-    gap: 10px;
-  }
-
-  .marami-detail-left > span,
-  .marami-detail-label {
-    font-size: 12.5px;
-  }
-
-  .marami-subheading {
-    font-size: 10px;
-  }
-
-  .marami-detail-row strong {
-    font-size: 13px;
+  .marami-footer {
+    font-size: 8.5px;
   }
 }
 
 </style>
 
 
-
 <script>
 
 (function () {
-
 
   /* ======================================================
      GET ACTIVE CURRENCY
@@ -791,38 +495,29 @@
 
     let currency = "";
 
-
     if (
       window.Shopify &&
       window.Shopify.currency
     ) {
-
       currency =
         window.Shopify.currency.active ||
         window.Shopify.currency.currency ||
         "";
-
     }
-
 
     if (!currency) {
-
       currency =
         widget.dataset.currency || "";
-
     }
-
 
     return String(currency || "USD")
       .trim()
       .toUpperCase();
-
   }
 
 
-
   /* ======================================================
-     FORMAT MONEY (Always Clean ISO + Formatted Number)
+     FORMAT MONEY
   ====================================================== */
 
   function formatPrice(value, currency) {
@@ -841,9 +536,7 @@
         maximumFractionDigits: 2
       })
     );
-
   }
-
 
 
   /* ======================================================
@@ -852,22 +545,15 @@
 
   function initGoldWidget(widget) {
 
-
     if (!widget) {
-
       return;
-
     }
-
 
     if (
       widget.dataset.initialized === "true"
     ) {
-
       return;
-
     }
-
 
     widget.dataset.initialized = "true";
 
@@ -879,24 +565,20 @@
         "[data-gold-price]"
       );
 
-
     const goldValueEl =
       widget.querySelector(
         "[data-gold-value]"
       );
-
 
     const atelierFeeEl =
       widget.querySelector(
         "[data-atelier-fee]"
       );
 
-
     const finalProductPriceEl =
       widget.querySelector(
         "[data-final-product-price]"
       );
-
 
     const footerEl =
       widget.querySelector(
@@ -909,26 +591,20 @@
     const karat =
       Number(widget.dataset.karat) || 22;
 
-
     const weight =
       Number(widget.dataset.weight) || 0;
-
 
     const craftsmanshipPercent =
       Number(widget.dataset.craftsmanship) || 0;
 
-
     const engravingPercent =
       Number(widget.dataset.engraving) || 0;
-
 
     const packagingPercent =
       Number(widget.dataset.packaging) || 0;
 
-
     const engravingEnabled =
       widget.dataset.engravingEnabled === "true";
-
 
     const packagingEnabled =
       widget.dataset.packagingEnabled === "true";
@@ -940,7 +616,6 @@
       getActiveCurrency(widget);
 
 
-
     /* ====================================================
        SHOPIFY APP ENDPOINT
     ==================================================== */
@@ -948,7 +623,6 @@
     const apiUrl =
       "/apps/gold-price?currency=" +
       encodeURIComponent(currency);
-
 
 
     fetch(
@@ -963,7 +637,6 @@
         cache: "no-store"
       }
     )
-
 
     .then(function (response) {
 
@@ -980,9 +653,7 @@
 
     })
 
-
     .then(function (data) {
-
 
       /* VALIDATE */
 
@@ -999,7 +670,6 @@
       }
 
 
-
       /* API CURRENCY */
 
       const apiCurrency =
@@ -1009,173 +679,395 @@
         )
         .toUpperCase();
 
+
       const weightDisplayEl =
-        widget.querySelector("[data-weight-display]");
+        widget.querySelector(
+          "[data-weight-display]"
+        );
 
       const purityDisplayEl =
-        widget.querySelector("[data-purity-display]");
+        widget.querySelector(
+          "[data-purity-display]"
+        );
 
       const variantMapScript =
-        widget.querySelector("[data-variant-gold-map]");
+        widget.querySelector(
+          "[data-variant-gold-map]"
+        );
+
 
       let variantMap = [];
+
       if (variantMapScript) {
+
         try {
-          variantMap = JSON.parse(variantMapScript.textContent || "[]");
+
+          variantMap =
+            JSON.parse(
+              variantMapScript.textContent || "[]"
+            );
+
         } catch (e) {
-          console.warn("Failed to parse variant gold map", e);
+
+          console.warn(
+            "Failed to parse variant gold map",
+            e
+          );
+
         }
+
       }
 
+
       function renderForVariant(variantData) {
-        const activeWeight = Number(variantData?.weight ?? weight) || 0;
-        const activeKarat = Number(variantData?.karat ?? karat) || 22;
+
+        const activeWeight =
+          Number(
+            variantData?.weight ?? weight
+          ) || 0;
+
+        const activeKarat =
+          Number(
+            variantData?.karat ?? karat
+          ) || 22;
+
         const activeCraftsmanship =
-          Number(variantData?.craftsmanship ?? craftsmanshipPercent) || 0;
+          Number(
+            variantData?.craftsmanship ??
+            craftsmanshipPercent
+          ) || 0;
+
         const activeEngravingFee =
-          Number(variantData?.engravingFee ?? engravingPercent) || 0;
+          Number(
+            variantData?.engravingFee ??
+            engravingPercent
+          ) || 0;
+
         const activePackagingFee =
-          Number(variantData?.packagingFee ?? packagingPercent) || 0;
+          Number(
+            variantData?.packagingFee ??
+            packagingPercent
+          ) || 0;
+
         const activeEngravingEnabled =
           variantData?.engravingEnabled !== undefined
-            ? Boolean(variantData.engravingEnabled)
+            ? Boolean(
+                variantData.engravingEnabled
+              )
             : engravingEnabled;
+
         const activePackagingEnabled =
           variantData?.packagingEnabled !== undefined
-            ? Boolean(variantData.packagingEnabled)
+            ? Boolean(
+                variantData.packagingEnabled
+              )
             : packagingEnabled;
 
+
         if (weightDisplayEl) {
-          const formattedWeight = Number.isInteger(activeWeight)
-            ? activeWeight.toFixed(1)
-            : String(activeWeight);
-          weightDisplayEl.textContent = formattedWeight + " g";
-        }
-        if (purityDisplayEl) {
-          purityDisplayEl.textContent = String(activeKarat).toLowerCase() + "k";
+
+          const formattedWeight =
+            Number.isInteger(activeWeight)
+              ? activeWeight.toFixed(1)
+              : String(activeWeight);
+
+          weightDisplayEl.textContent =
+            formattedWeight + " g";
+
         }
 
+
+        if (purityDisplayEl) {
+
+          purityDisplayEl.textContent =
+            String(activeKarat).toLowerCase() + "k";
+
+        }
+
+
         const priceKey =
-          String(activeKarat).toLowerCase().replace("k", "") + "k";
+          String(activeKarat)
+            .toLowerCase()
+            .replace("k", "") + "k";
+
 
         const pricePerGram =
           Number(data.prices[priceKey]) ||
-          Number(data.prices[priceKey.toUpperCase()]) ||
+          Number(
+            data.prices[
+              priceKey.toUpperCase()
+            ]
+          ) ||
           0;
+
 
         if (pricePerGram <= 0) {
           return;
         }
 
+
         const goldValue =
-          pricePerGram * activeWeight;
+          pricePerGram *
+          activeWeight;
+
 
         let totalFeePercent = 0;
+
+
         if (activeCraftsmanship > 0) {
-          totalFeePercent += activeCraftsmanship;
+
+          totalFeePercent +=
+            activeCraftsmanship;
+
         }
-        if (activeEngravingEnabled && activeEngravingFee > 0) {
-          totalFeePercent += activeEngravingFee;
+
+
+        if (
+          activeEngravingEnabled &&
+          activeEngravingFee > 0
+        ) {
+
+          totalFeePercent +=
+            activeEngravingFee;
+
         }
-        if (activePackagingEnabled && activePackagingFee > 0) {
-          totalFeePercent += activePackagingFee;
+
+
+        if (
+          activePackagingEnabled &&
+          activePackagingFee > 0
+        ) {
+
+          totalFeePercent +=
+            activePackagingFee;
+
         }
+
 
         const goldPortionPercent =
           100 - totalFeePercent;
+
 
         if (goldPortionPercent <= 0) {
           return;
         }
 
+
         const finalProductPrice =
-          goldValue / (goldPortionPercent / 100);
+          goldValue /
+          (goldPortionPercent / 100);
+
 
         const craftsmanshipValue =
-          finalProductPrice * (activeCraftsmanship / 100);
+          finalProductPrice *
+          (activeCraftsmanship / 100);
+
 
         const engravingValue =
           activeEngravingEnabled
-            ? finalProductPrice * (activeEngravingFee / 100)
+            ? finalProductPrice *
+              (activeEngravingFee / 100)
             : 0;
+
 
         const packagingValue =
           activePackagingEnabled
-            ? finalProductPrice * (activePackagingFee / 100)
+            ? finalProductPrice *
+              (activePackagingFee / 100)
             : 0;
+
 
         const atelierFee =
           craftsmanshipValue +
           engravingValue +
           packagingValue;
 
+
         if (priceEl) {
-          priceEl.textContent = formatPrice(pricePerGram, apiCurrency);
+
+          priceEl.textContent =
+            formatPrice(
+              pricePerGram,
+              apiCurrency
+            );
+
         }
+
+
         if (goldValueEl) {
-          goldValueEl.textContent = formatPrice(goldValue, apiCurrency);
+
+          goldValueEl.textContent =
+            formatPrice(
+              goldValue,
+              apiCurrency
+            );
+
         }
+
+
         if (atelierFeeEl) {
-          atelierFeeEl.textContent = formatPrice(atelierFee, apiCurrency);
+
+          atelierFeeEl.textContent =
+            formatPrice(
+              atelierFee,
+              apiCurrency
+            );
+
         }
+
+
         if (finalProductPriceEl) {
-          finalProductPriceEl.textContent = formatPrice(finalProductPrice, apiCurrency);
+
+          finalProductPriceEl.textContent =
+            formatPrice(
+              finalProductPrice,
+              apiCurrency
+            );
+
         }
+
+
         if (footerEl) {
-          footerEl.textContent = "Latest saved gold price";
+
+          footerEl.textContent =
+            "Latest saved gold price";
+
         }
+
       }
 
-      // Initial render using active widget attributes / first variant
-      const initialVariant = variantMap.length ? variantMap[0] : {
-        weight: weight,
-        karat: karat,
-        craftsmanship: craftsmanshipPercent,
-        engravingFee: engravingPercent,
-        packagingFee: packagingPercent,
-        engravingEnabled: engravingEnabled,
-        packagingEnabled: packagingEnabled
-      };
-      renderForVariant(initialVariant);
 
-      // Handle variant change events
-      function onVariantChange(variantId) {
-        if (!variantId || !variantMap.length) return;
-        const found = variantMap.find(function (v) {
-          return String(v.id) === String(variantId);
-        });
-        if (found) {
-          renderForVariant(found);
-        }
-      }
+      /* INITIAL RENDER */
 
-      document.addEventListener("variant:change", function (e) {
-        if (e.detail && e.detail.variant && e.detail.variant.id) {
-          onVariantChange(e.detail.variant.id);
-        }
-      });
+      const initialVariant =
+        variantMap.length
+          ? variantMap[0]
+          : {
+              weight: weight,
+              karat: karat,
+              craftsmanship:
+                craftsmanshipPercent,
+              engravingFee:
+                engravingPercent,
+              packagingFee:
+                packagingPercent,
+              engravingEnabled:
+                engravingEnabled,
+              packagingEnabled:
+                packagingEnabled
+            };
 
-      document.addEventListener("change", function (e) {
+
+      renderForVariant(
+        initialVariant
+      );
+
+
+      /* VARIANT CHANGE */
+
+      function onVariantChange(
+        variantId
+      ) {
+
         if (
-          e.target &&
-          (e.target.name === "id" ||
-            e.target.closest('form[action*="/cart/add"]'))
+          !variantId ||
+          !variantMap.length
         ) {
-          const form = e.target.closest('form[action*="/cart/add"]');
-          if (form) {
-            const idInput = form.querySelector('[name="id"]');
-            if (idInput && idInput.value) {
-              onVariantChange(idInput.value);
-            }
-          }
+          return;
         }
-      });
+
+
+        const found =
+          variantMap.find(
+            function (v) {
+
+              return (
+                String(v.id) ===
+                String(variantId)
+              );
+
+            }
+          );
+
+
+        if (found) {
+
+          renderForVariant(
+            found
+          );
+
+        }
+
+      }
+
+
+      document.addEventListener(
+        "variant:change",
+        function (e) {
+
+          if (
+            e.detail &&
+            e.detail.variant &&
+            e.detail.variant.id
+          ) {
+
+            onVariantChange(
+              e.detail.variant.id
+            );
+
+          }
+
+        }
+      );
+
+
+      document.addEventListener(
+        "change",
+        function (e) {
+
+          if (
+            e.target &&
+            (
+              e.target.name === "id" ||
+              e.target.closest(
+                'form[action*="/cart/add"]'
+              )
+            )
+          ) {
+
+            const form =
+              e.target.closest(
+                'form[action*="/cart/add"]'
+              );
+
+
+            if (form) {
+
+              const idInput =
+                form.querySelector(
+                  '[name="id"]'
+                );
+
+
+              if (
+                idInput &&
+                idInput.value
+              ) {
+
+                onVariantChange(
+                  idInput.value
+                );
+
+              }
+
+            }
+
+          }
+
+        }
+      );
+
     })
-
-
-    /* ====================================================
-       ERROR
-    ==================================================== */
 
     .catch(function (error) {
 
@@ -1186,30 +1078,22 @@
 
 
       if (priceEl) {
-
         priceEl.textContent = "—";
-
       }
 
 
       if (goldValueEl) {
-
         goldValueEl.textContent = "—";
-
       }
 
 
       if (atelierFeeEl) {
-
         atelierFeeEl.textContent = "—";
-
       }
 
 
       if (finalProductPriceEl) {
-
         finalProductPriceEl.textContent = "—";
-
       }
 
 
@@ -1223,7 +1107,6 @@
     });
 
   }
-
 
 
   /* ======================================================
@@ -1241,7 +1124,9 @@
     widgets.forEach(
       function (widget) {
 
-        initGoldWidget(widget);
+        initGoldWidget(
+          widget
+        );
 
       }
     );
@@ -1249,11 +1134,11 @@
   }
 
 
-
   /* INITIAL LOAD */
 
   if (
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
   ) {
 
     document.addEventListener(
@@ -1261,14 +1146,11 @@
       initAllWidgets
     );
 
-  }
-
-  else {
+  } else {
 
     initAllWidgets();
 
   }
-
 
 
   /* SHOPIFY THEME EDITOR */
@@ -1282,11 +1164,9 @@
     }
   );
 
-
 })();
 
 </script>
-
 
 
 {% schema %}
